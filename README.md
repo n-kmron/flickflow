@@ -1,16 +1,16 @@
 # Projet MOBG5
 
-Ce dépôt contient les sources du projet <nom du projet>.
+Ce dépôt contient les sources du projet `Love Stor'hits`.
 
 ## Description
 
-L'application permet de trouver les séances des films disponibles autour de sa position. Une fois la séance terminée, si l'utilisateur possède un compte sur l'application, il peut critiquer et noter le film.
+L'application permet de trouver des "matchs" en rapport avec ses goûts musicaux. Si la personne proposée et ses goûts musicaux matchent, si l'utilisateur possède un compte sur l'application, il peut obtenir le réseau social de la personne.
 
 ## Persistance des données
 
-L'application conserve un historique des recherches effectuées. Cet historique est persisté dans la base de données locale de l'application.
+L'application conserve un historique des personnes proposées. Cet historique est persisté dans la base de données locale de l'application.
 
-Les données relatives aux comptes utilisateurs, aux notes et aux critiques sont persistées via firebase : <url du projet firebase>
+Les données relatives aux comptes utilisateurs, aux personnes et aux musiques sont persistées via firebase : <url du projet firebase>
 
 ## Backend
 
