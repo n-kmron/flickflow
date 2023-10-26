@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "g58008.webg5.lovestorhits"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "g58008.webg5.lovestorhits"
