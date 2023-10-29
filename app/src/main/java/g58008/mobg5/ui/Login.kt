@@ -74,33 +74,41 @@ fun LoginFields(
 ) {
     val appUiState by appViewModel.uiState.collectAsState()
 
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(16.dp)
     ) {
-        Column {
-            DemoField(
-                placeholder = stringResource(id = R.string.askEmail),
-                onUserValueChanged = { appViewModel.updateUserEmail(it) },
-                userValue = appViewModel.userEmail,
-                isValueWrong = appUiState.isEmailWrong,
-                onKeyboardDone = { appViewModel.checkUserData() },
-                visualTransformation = VisualTransformation.None
-            )
-            DemoField(
-                placeholder = stringResource(id = R.string.askPassword),
-                onUserValueChanged = { appViewModel.updateUserPassword(it) },
-                userValue = appViewModel.userPassword,
-                isValueWrong = appUiState.isPasswordWrong,
-                onKeyboardDone = { appViewModel.checkUserData() },
-                visualTransformation = PasswordVisualTransformation()
-            )
-            LoginButton(onClick = { appViewModel.checkUserData() })
-        }
+        DemoField(
+            placeholder = stringResource(id = R.string.askEmail),
+            onUserValueChanged = { appViewModel.updateUserEmail(it) },
+            userValue = appViewModel.userEmail,
+            isValueWrong = appUiState.isEmailWrong,
+            onKeyboardDone = { appViewModel.checkUserData() },
+            visualTransformation = VisualTransformation.None
+        )
+        DemoField(
+            placeholder = stringResource(id = R.string.askPassword),
+            onUserValueChanged = { appViewModel.updateUserPassword(it) },
+            userValue = appViewModel.userPassword,
+            isValueWrong = appUiState.isPasswordWrong,
+            onKeyboardDone = { appViewModel.checkUserData() },
+            visualTransformation = PasswordVisualTransformation()
+        )
+        LoginButton(onClick = { appViewModel.checkUserData() })
     }
 }
 
+/**
+ * A customizable input field
+ *
+ * @param placeholder The text to display as a placeholder in the input field.
+ * @param userValue The current value entered by the user.
+ * @param onUserValueChanged A callback function to handle changes to the user's input value.
+ * @param isValueWrong Indicates whether the input value is considered wrong or invalid.
+ * @param visualTransformation The visual transformation to apply to the input value (e.g., for password masking).
+ * @param onKeyboardDone A callback function triggered when the user presses the "Done" button on the keyboard.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DemoField(
@@ -109,7 +117,7 @@ fun DemoField(
     isValueWrong: Boolean,
     onKeyboardDone: () -> Unit,
     userValue: String,
-    visualTransformation : VisualTransformation,
+    visualTransformation: VisualTransformation,
 ) {
     OutlinedTextField(
         value = userValue,
@@ -118,7 +126,7 @@ fun DemoField(
         shape = shapes.large,
         modifier = Modifier.fillMaxWidth(),
         label = {
-            if(isValueWrong) {
+            if (isValueWrong) {
                 Text(stringResource(id = R.string.wrong_value))
             } else {
                 Text(placeholder)
@@ -160,7 +168,6 @@ fun LoginFooter() {
         }
     }
 }
-
 
 @Composable
 fun LoginButton(onClick: () -> Unit) {
