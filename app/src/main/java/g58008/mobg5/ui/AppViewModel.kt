@@ -87,8 +87,6 @@ class AppViewModel : ViewModel() {
         val isPasswordValid = isPasswordValid(userPassword)
 
         _uiState.value = _uiState.value.copy(
-            isEmailWrong = !isEmailValid,
-            isPasswordWrong = !isPasswordValid,
             isEmailFormatWrong = !isEmailValid,
             isPasswordFormatWrong = !isPasswordValid
         )

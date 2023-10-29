@@ -1,5 +1,6 @@
 package g58008.mobg5.ui
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -8,8 +9,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme.shapes
@@ -30,6 +34,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.material3.Icon
+import androidx.compose.ui.res.painterResource
 import g58008.mobg5.R
 
 @Composable
@@ -37,18 +43,21 @@ fun LoginScreen() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState())
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp)
                 .align(Alignment.Center),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
             LoginHeader()
             Spacer(modifier = Modifier.height(16.dp))
             LoginFields()
+            Spacer(modifier = Modifier.height(16.dp))
             LoginFooter()
         }
     }
@@ -91,8 +100,9 @@ fun LoginFields(
                 appUiState.isEmailFormatWrong,
                 stringResource(id = R.string.wrong_email_format)),
             onKeyboardDone = { appViewModel.checkUserData() },
-            visualTransformation = VisualTransformation.None
-        )
+            visualTransformation = VisualTransformation.None,
+            leadingIcon = R.drawable.email,
+            )
         DemoField(
             placeholder = stringResource(id = R.string.askPassword),
             onUserValueChanged = { appViewModel.updateUserPassword(it) },
@@ -104,8 +114,9 @@ fun LoginFields(
                 appUiState.isPasswordFormatWrong,
                 stringResource(id = R.string.wrong_password_format)),
             onKeyboardDone = { appViewModel.checkUserData() },
-            visualTransformation = PasswordVisualTransformation()
-        )
+            visualTransformation = PasswordVisualTransformation(),
+            leadingIcon = R.drawable.password,
+            )
         LoginButton(onClick = { appViewModel.checkUserData() })
     }
 }
@@ -116,9 +127,12 @@ fun LoginFields(
  * @param placeholder The text to display as a placeholder in the input field.
  * @param userValue The current value entered by the user.
  * @param onUserValueChanged A callback function to handle changes to the user's input value.
- * @param isValueWrong Indicates whether the input value is considered wrong or invalid.
+ * @param isValueWrong Indicates whether the input value is considered wrong.
+ * @param isFormatWrong Indicates whether the input value format is considered wrong.
  * @param visualTransformation The visual transformation to apply to the input value (e.g., for password masking).
  * @param onKeyboardDone A callback function triggered when the user presses the "Done" button on the keyboard.
+ * @param leadingIcon A number which represent an icon
+ *
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -130,6 +144,7 @@ fun DemoField(
     onKeyboardDone: () -> Unit,
     userValue: String,
     visualTransformation: VisualTransformation,
+    @DrawableRes leadingIcon : Int,
 ) {
     OutlinedTextField(
         value = userValue,
@@ -149,6 +164,17 @@ fun DemoField(
             }
         },
         isError = isValueWrong.first || isFormatWrong.first,
+        leadingIcon = {
+            Box(
+                modifier = Modifier.size(24.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    painter = painterResource(id = leadingIcon),
+                    contentDescription = stringResource(id = R.string.icon_textfield)
+                )
+            }
+        },
         visualTransformation = visualTransformation,
         keyboardOptions = KeyboardOptions.Default.copy(
             imeAction = ImeAction.Done
