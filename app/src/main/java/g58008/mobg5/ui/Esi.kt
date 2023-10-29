@@ -7,8 +7,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import g58008.mobg5.R
-import g58008.mobg5.ui.theme.ProjetTheme
-
+import g58008.mobg5.ui.theme.AppTheme
 
 @Composable
 fun EsiScreen() {
@@ -26,7 +25,7 @@ fun EsiScreen() {
 @Preview(showBackground = false)
 @Composable
 fun EsiPreview() {
-    ProjetTheme {
+    AppTheme {
         EsiScreen()
     }
 }
