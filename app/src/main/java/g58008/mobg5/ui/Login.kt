@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import g58008.mobg5.R
@@ -157,8 +158,9 @@ fun DemoField(
         value = userValue,
         onValueChange = onUserValueChanged,
         singleLine = true,
-        shape = shapes.large,
-        modifier = Modifier.fillMaxWidth(),
+        shape = shapes.medium,
+        modifier = Modifier
+            .fillMaxWidth(),
         label = {
             if(isFormatWrong.first) {
                 Text(isFormatWrong.second)
