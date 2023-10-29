@@ -12,4 +12,5 @@
     <string name="wrong_password">Incorrect password</string>
     <string name="wrong_password_format">Password format is not correct</string>
     <string name="login">Log in</string>
+    <string name="icon_textfield">Icon for the textfield</string>
 </resources>
