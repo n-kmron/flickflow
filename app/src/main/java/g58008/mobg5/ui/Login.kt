@@ -1,6 +1,7 @@
 package g58008.mobg5.ui
 
 import androidx.annotation.DrawableRes
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,6 +19,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme.shapes
 import androidx.compose.material3.OutlinedTextField
@@ -36,40 +38,68 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import g58008.mobg5.R
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(4.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(32.dp)
-        ) {
+    Scaffold(
+        topBar = {
             LoginHeader()
-            Spacer(modifier = Modifier.height(16.dp))
-            LoginFields()
-            Spacer(modifier = Modifier.height(16.dp))
-            LoginFooter()
+        }
+    ) { it ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(it),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(32.dp)
+            ) {
+                LoginFields()
+                Spacer(modifier = Modifier.height(16.dp))
+                LoginFooter()
+            }
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginHeader() {
-    Text(
-        text = stringResource(id = R.string.app_name),
-        style = MaterialTheme.typography.displayLarge,
-                modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
+fun LoginHeader(
+    modifier: Modifier = Modifier
+) {
+    CenterAlignedTopAppBar(
+        title = {
+            Row (
+                verticalAlignment = Alignment.CenterVertically
+            )
+            {
+                Image(
+                    modifier = Modifier
+                        .size(dimensionResource(id = R.dimen.image_size))
+                        .padding(dimensionResource(id = R.dimen.padding_small))
+                        .align(Alignment.CenterVertically),
+                    painter = painterResource(R.drawable.esi_logo),
+                    contentDescription = stringResource(id = R.string.app_name)
+                )
+                Text(
+                    text = stringResource(id = R.string.app_name),
+                    style = MaterialTheme.typography.displayLarge,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.CenterVertically),
+                )
+            }
+        },
+        modifier = modifier
     )
 }
 
