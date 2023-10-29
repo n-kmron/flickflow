@@ -49,6 +49,7 @@ fun LoginScreen() {
             LoginHeader()
             Spacer(modifier = Modifier.height(16.dp))
             LoginFields()
+            LoginFooter()
         }
     }
 }
@@ -83,7 +84,12 @@ fun LoginFields(
             placeholder = stringResource(id = R.string.askEmail),
             onUserValueChanged = { appViewModel.updateUserEmail(it) },
             userValue = appViewModel.userEmail,
-            isValueWrong = appUiState.isEmailWrong,
+            isValueWrong = Pair(
+                appUiState.isEmailWrong,
+                stringResource(id = R.string.wrong_email)),
+            isFormatWrong = Pair(
+                appUiState.isEmailFormatWrong,
+                stringResource(id = R.string.wrong_email_format)),
             onKeyboardDone = { appViewModel.checkUserData() },
             visualTransformation = VisualTransformation.None
         )
@@ -91,7 +97,12 @@ fun LoginFields(
             placeholder = stringResource(id = R.string.askPassword),
             onUserValueChanged = { appViewModel.updateUserPassword(it) },
             userValue = appViewModel.userPassword,
-            isValueWrong = appUiState.isPasswordWrong,
+            isValueWrong = Pair(
+                appUiState.isPasswordWrong,
+                stringResource(id = R.string.wrong_password)),
+            isFormatWrong = Pair(
+                appUiState.isPasswordFormatWrong,
+                stringResource(id = R.string.wrong_password_format)),
             onKeyboardDone = { appViewModel.checkUserData() },
             visualTransformation = PasswordVisualTransformation()
         )
@@ -114,7 +125,8 @@ fun LoginFields(
 fun DemoField(
     placeholder: String,
     onUserValueChanged: (String) -> Unit,
-    isValueWrong: Boolean,
+    isValueWrong: Pair<Boolean, String>,
+    isFormatWrong: Pair<Boolean, String>,
     onKeyboardDone: () -> Unit,
     userValue: String,
     visualTransformation: VisualTransformation,
@@ -126,13 +138,17 @@ fun DemoField(
         shape = shapes.large,
         modifier = Modifier.fillMaxWidth(),
         label = {
-            if (isValueWrong) {
-                Text(stringResource(id = R.string.wrong_value))
-            } else {
+            if(isFormatWrong.first) {
+                Text(isFormatWrong.second)
+            }
+            else if (isValueWrong.first) {
+                Text(isValueWrong.second)
+            }
+            else {
                 Text(placeholder)
             }
         },
-        isError = isValueWrong,
+        isError = isValueWrong.first || isFormatWrong.first,
         visualTransformation = visualTransformation,
         keyboardOptions = KeyboardOptions.Default.copy(
             imeAction = ImeAction.Done

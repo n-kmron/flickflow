@@ -14,5 +14,7 @@ data class AppUiState(
     val currentPassword: String = "",
     val isEmailWrong : Boolean = false,
     val isPasswordWrong : Boolean = false,
+    val isEmailFormatWrong : Boolean = false,
+    val isPasswordFormatWrong: Boolean = false,
     val isValidLogin : Boolean = false
 )

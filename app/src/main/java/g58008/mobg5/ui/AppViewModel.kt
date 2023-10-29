@@ -63,8 +63,8 @@ class AppViewModel : ViewModel() {
             _uiState.update { currentState ->
                 currentState.copy(
                     isValidLogin = false,
-                    isPasswordWrong = false,
-                    isEmailWrong = false,
+                    isPasswordWrong = true,
+                    isEmailWrong = true,
                     currentEmail = email,
                     currentPassword = password,
                 )
@@ -88,7 +88,9 @@ class AppViewModel : ViewModel() {
 
         _uiState.value = _uiState.value.copy(
             isEmailWrong = !isEmailValid,
-            isPasswordWrong = !isPasswordValid
+            isPasswordWrong = !isPasswordValid,
+            isEmailFormatWrong = !isEmailValid,
+            isPasswordFormatWrong = !isPasswordValid
         )
         if (isEmailValid && isPasswordValid) {
             updateGameState(userEmail, userPassword)

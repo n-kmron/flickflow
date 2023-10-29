@@ -1,9 +1,15 @@
 <resources>
-    <string name="app_name">Projet</string>
+    <!-- APP strings-->
+    <string name="app_name">MOBG5</string>
+    <string name="copyrights">© 2023 Cameron Noupoue. All rights reserved.</string>
+    <string name="author">Cameron Noupoue</string>
+
+    <!-- LOGIN PAGE strings-->
     <string name="askEmail">Enter your email</string>
     <string name="askPassword">Enter your password</string>
-    <string name="wrong_value">No matching, retry</string>
+    <string name="wrong_email_format">Email format is not correct</string>
+    <string name="wrong_email">Incorrect email</string>
+    <string name="wrong_password">Incorrect password</string>
+    <string name="wrong_password_format">Password format is not correct</string>
     <string name="login">Log in</string>
-    <string name="copyrights">© 2023 Cameron Noupoue. Tous droits réservés.</string>
-    <string name="author">Cameron Noupoue</string>
 </resources>
