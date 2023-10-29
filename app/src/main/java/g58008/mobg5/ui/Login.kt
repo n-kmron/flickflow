@@ -28,19 +28,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import g58008.mobg5.R
 
@@ -49,18 +44,14 @@ fun LoginScreen() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .fillMaxWidth()
-            .fillMaxHeight()
             .verticalScroll(rememberScrollState())
+            .padding(4.dp),
+        contentAlignment = Alignment.Center
     ) {
         Column(
             modifier = Modifier
-                .fillMaxSize()
                 .fillMaxWidth()
-                .fillMaxHeight()
-                .align(Alignment.Center),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+                .padding(32.dp)
         ) {
             LoginHeader()
             Spacer(modifier = Modifier.height(16.dp))
@@ -75,16 +66,13 @@ fun LoginScreen() {
 fun LoginHeader() {
     Text(
         text = stringResource(id = R.string.app_name),
-        style = TextStyle(
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center
-        ),
-        modifier = Modifier
+        style = MaterialTheme.typography.displayLarge,
+                modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
     )
 }
+
 
 @Composable
 fun LoginFields(
@@ -203,22 +191,21 @@ fun LoginFooter() {
             .fillMaxWidth()
             .fillMaxHeight()
             .background(backgroundColor)
-    ) {
+        ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp),
+                .fillMaxHeight(),
+            horizontalArrangement = Arrangement.Center,
         ) {
             Text(
                 text = stringResource(id = R.string.author),
-                modifier = Modifier
-                    .padding(4.dp)
-            )
+                style = MaterialTheme.typography.labelSmall,
+                )
             Text(
                 text = stringResource(id = R.string.copyrights),
-                modifier = Modifier
-                    .padding(4.dp)
-            )
+                style = MaterialTheme.typography.labelSmall,
+                )
         }
     }
 }
