@@ -1,10 +1,13 @@
 package g58008.mobg5.ui
 
 import androidx.annotation.DrawableRes
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -35,6 +38,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import g58008.mobg5.R
 
@@ -43,13 +48,15 @@ fun LoginScreen() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .fillMaxWidth()
+            .fillMaxHeight()
             .verticalScroll(rememberScrollState())
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp)
+                .fillMaxWidth()
+                .fillMaxHeight()
                 .align(Alignment.Center),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
@@ -87,7 +94,7 @@ fun LoginFields(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(32.dp)
     ) {
         DemoField(
             placeholder = stringResource(id = R.string.askEmail),
@@ -187,24 +194,27 @@ fun DemoField(
 
 @Composable
 fun LoginFooter() {
+    val backgroundColor = MaterialTheme.colorScheme.background
+
     Box(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+            .background(backgroundColor)
     ) {
-        Column(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp)
+                .padding(8.dp),
         ) {
             Text(
                 text = stringResource(id = R.string.author),
                 modifier = Modifier
-                    .align(Alignment.Start)
                     .padding(4.dp)
             )
             Text(
                 text = stringResource(id = R.string.copyrights),
                 modifier = Modifier
-                    .align(Alignment.End)
                     .padding(4.dp)
             )
         }
