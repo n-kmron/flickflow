@@ -51,6 +51,8 @@ fun LoginScreen(
     navController: NavHostController,
 ) {
     Scaffold(
+        modifier = Modifier
+            .fillMaxSize(),
         topBar = {
             LoginHeader()
         }
@@ -85,14 +87,15 @@ fun LoginHeader(
     CenterAlignedTopAppBar(
         title = {
             Row(
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .fillMaxSize()
             )
             {
                 Image(
                     modifier = Modifier
-                        .size(dimensionResource(id = R.dimen.image_size))
-                        .padding(dimensionResource(id = R.dimen.padding_small))
-                        .align(Alignment.CenterVertically),
+                        .size(dimensionResource(id = R.dimen.image_size)),
                     painter = painterResource(R.drawable.esi_logo),
                     contentDescription = stringResource(id = R.string.app_name)
                 )
@@ -100,7 +103,6 @@ fun LoginHeader(
                     text = stringResource(id = R.string.app_name),
                     style = MaterialTheme.typography.displayLarge,
                     modifier = Modifier
-                        .fillMaxWidth()
                         .align(Alignment.CenterVertically),
                 )
             }
