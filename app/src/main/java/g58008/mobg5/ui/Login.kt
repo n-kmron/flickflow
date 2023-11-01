@@ -31,7 +31,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -124,7 +123,7 @@ fun LoginFields(
             .fillMaxSize()
             .padding(32.dp)
     ) {
-        DemoField(
+        MyCustomField(
             placeholder = stringResource(id = R.string.askEmail),
             onUserValueChanged = { appViewModel.updateUserEmail(it) },
             userValue = appViewModel.userEmail,
@@ -140,7 +139,7 @@ fun LoginFields(
             visualTransformation = VisualTransformation.None,
             leadingIcon = R.drawable.email,
         )
-        DemoField(
+        /*DemoField(
             placeholder = stringResource(id = R.string.askPassword),
             onUserValueChanged = { appViewModel.updateUserPassword(it) },
             userValue = appViewModel.userPassword,
@@ -155,7 +154,7 @@ fun LoginFields(
             onKeyboardDone = { appViewModel.checkUserData() },
             visualTransformation = PasswordVisualTransformation(),
             leadingIcon = R.drawable.password,
-        )
+        )*/
         LoginButton(
             onClick = { appViewModel.checkUserData() },
             navController = navController,
@@ -178,7 +177,7 @@ fun LoginFields(
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DemoField(
+fun MyCustomField(
     placeholder: String,
     onUserValueChanged: (String) -> Unit,
     isValueWrong: Pair<Boolean, String>,

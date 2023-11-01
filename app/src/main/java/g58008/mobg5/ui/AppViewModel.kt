@@ -27,9 +27,6 @@ class AppViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(AppUiState())
     val uiState: StateFlow<AppUiState> = _uiState.asStateFlow()
 
-    private val _currentDestination = MutableLiveData<NavigationDestinations>()
-    val currentDestination: LiveData<NavigationDestinations> = _currentDestination
-
     var userEmail by mutableStateOf("")
         private set
 
@@ -87,7 +84,8 @@ class AppViewModel : ViewModel() {
     */
     fun checkUserData(): Boolean {
         val isEmailValid = isEmailValid(userEmail)
-        val isPasswordValid = isPasswordValid(userPassword)
+        //val isPasswordValid = isPasswordValid(userPassword)
+        val isPasswordValid = true
 
         _uiState.value = _uiState.value.copy(
             isEmailFormatWrong = !isEmailValid,
