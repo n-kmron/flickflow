@@ -34,7 +34,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    LoginScreen()
+                    ProjetMob()
                 }
             }
         }
@@ -96,6 +96,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun AppPreview() {
     AppTheme {
-        LoginScreen()
+        ProjetMob()
     }
 }

@@ -41,16 +41,20 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import g58008.mobg5.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen() {
+fun LoginScreen(
+    navController: NavHostController,
+) {
     Scaffold(
         topBar = {
             LoginHeader()
         }
-    ) { it ->
+    ) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -63,7 +67,9 @@ fun LoginScreen() {
                     .fillMaxWidth()
                     .padding(32.dp)
             ) {
-                LoginFields()
+                LoginFields(
+                    navController = navController
+                )
                 Spacer(modifier = Modifier.height(16.dp))
                 LoginFooter()
             }
@@ -78,7 +84,7 @@ fun LoginHeader(
 ) {
     CenterAlignedTopAppBar(
         title = {
-            Row (
+            Row(
                 verticalAlignment = Alignment.CenterVertically
             )
             {
@@ -107,6 +113,7 @@ fun LoginHeader(
 @Composable
 fun LoginFields(
     appViewModel: AppViewModel = viewModel(),
+    navController: NavController,
 ) {
     val appUiState by appViewModel.uiState.collectAsState()
 
@@ -121,29 +128,36 @@ fun LoginFields(
             userValue = appViewModel.userEmail,
             isValueWrong = Pair(
                 appUiState.isEmailWrong,
-                stringResource(id = R.string.wrong_email)),
+                stringResource(id = R.string.wrong_email)
+            ),
             isFormatWrong = Pair(
                 appUiState.isEmailFormatWrong,
-                stringResource(id = R.string.wrong_email_format)),
+                stringResource(id = R.string.wrong_email_format)
+            ),
             onKeyboardDone = { appViewModel.checkUserData() },
             visualTransformation = VisualTransformation.None,
             leadingIcon = R.drawable.email,
-            )
+        )
         DemoField(
             placeholder = stringResource(id = R.string.askPassword),
             onUserValueChanged = { appViewModel.updateUserPassword(it) },
             userValue = appViewModel.userPassword,
             isValueWrong = Pair(
                 appUiState.isPasswordWrong,
-                stringResource(id = R.string.wrong_password)),
+                stringResource(id = R.string.wrong_password)
+            ),
             isFormatWrong = Pair(
                 appUiState.isPasswordFormatWrong,
-                stringResource(id = R.string.wrong_password_format)),
+                stringResource(id = R.string.wrong_password_format)
+            ),
             onKeyboardDone = { appViewModel.checkUserData() },
             visualTransformation = PasswordVisualTransformation(),
             leadingIcon = R.drawable.password,
-            )
-        LoginButton(onClick = { appViewModel.checkUserData() })
+        )
+        LoginButton(
+            onClick = { appViewModel.checkUserData() },
+            navController = navController,
+        )
     }
 }
 
@@ -170,7 +184,7 @@ fun DemoField(
     onKeyboardDone: () -> Unit,
     userValue: String,
     visualTransformation: VisualTransformation,
-    @DrawableRes leadingIcon : Int,
+    @DrawableRes leadingIcon: Int,
 ) {
     OutlinedTextField(
         value = userValue,
@@ -180,13 +194,11 @@ fun DemoField(
         modifier = Modifier
             .fillMaxWidth(),
         label = {
-            if(isFormatWrong.first) {
+            if (isFormatWrong.first) {
                 Text(isFormatWrong.second)
-            }
-            else if (isValueWrong.first) {
+            } else if (isValueWrong.first) {
                 Text(isValueWrong.second)
-            }
-            else {
+            } else {
                 Text(placeholder)
             }
         },
@@ -221,7 +233,7 @@ fun LoginFooter() {
             .fillMaxWidth()
             .fillMaxHeight()
             .background(backgroundColor)
-        ) {
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -231,19 +243,26 @@ fun LoginFooter() {
             Text(
                 text = stringResource(id = R.string.author),
                 style = MaterialTheme.typography.labelSmall,
-                )
+            )
             Text(
                 text = stringResource(id = R.string.copyrights),
                 style = MaterialTheme.typography.labelSmall,
-                )
+            )
         }
     }
 }
 
 @Composable
-fun LoginButton(onClick: () -> Unit) {
+fun LoginButton(
+    onClick: () -> Boolean,
+    navController: NavController,
+) {
     Button(
-        onClick = onClick,
+        onClick = {
+            if(onClick()) {
+                navController.navigate(NavigationDestinations.HOME.name)
+            }
+        },
         modifier = Modifier
             .fillMaxWidth()
     ) {

@@ -3,6 +3,8 @@ package g58008.mobg5.ui
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,6 +26,9 @@ class AppViewModel : ViewModel() {
     }
     private val _uiState = MutableStateFlow(AppUiState())
     val uiState: StateFlow<AppUiState> = _uiState.asStateFlow()
+
+    private val _currentDestination = MutableLiveData<NavigationDestinations>()
+    val currentDestination: LiveData<NavigationDestinations> = _currentDestination
 
     var userEmail by mutableStateOf("")
         private set
@@ -78,11 +83,9 @@ class AppViewModel : ViewModel() {
      * - `isEmailValid` checks if the user's entered email is in a valid format.
      * - `isPasswordValid` checks if the user's entered password meets the criteria (at least 8 characters with an uppercase letter and a digit).
      *
-     * If the email is invalid, the UI state indicates an email error. If the password is also invalid, the UI state indicates both email and password errors.
-     * If both email and password are valid, the UI state reflects a valid login.
-     * After the check, the user data is reset.
-     */
-    fun checkUserData() {
+     * @return `true` if user data is valid; otherwise, returns `false`.
+    */
+    fun checkUserData(): Boolean {
         val isEmailValid = isEmailValid(userEmail)
         val isPasswordValid = isPasswordValid(userPassword)
 
@@ -92,8 +95,10 @@ class AppViewModel : ViewModel() {
         )
         if (isEmailValid && isPasswordValid) {
             updateGameState(userEmail, userPassword)
+            return true
         }
         resetUserData()
+        return false
     }
 
     /**
