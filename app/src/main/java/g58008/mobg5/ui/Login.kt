@@ -88,7 +88,7 @@ fun LoginFields(
     val appUiState by appViewModel.uiState.collectAsState()
 
     LaunchedEffect(key1 = appUiState, block = {
-        if(appViewModel.uiState.value.isValidLogin) {
+        if(appUiState.isValidLogin) {
             Log.d(TAG, "Authentication success")
             navigate()
         }
@@ -240,4 +240,3 @@ fun LoginButton(
         Text(text = stringResource(R.string.login), fontSize = 16.sp)
     }
 }
-
