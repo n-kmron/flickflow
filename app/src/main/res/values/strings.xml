@@ -8,9 +8,9 @@
     <string name="askEmail">Enter your email</string>
     <string name="askPassword">Enter your password</string>
     <string name="wrong_email_format">Email format is not correct</string>
-    <string name="wrong_email">Incorrect email</string>
-    <string name="wrong_password">Incorrect password</string>
+    <string name="wrong_credits">Incorrect credits to log in</string>
     <string name="wrong_password_format">1 maj, 1 number and 8 characters</string>
     <string name="login">Log in</string>
+    <string name="login_success">Authentication success</string>
     <string name="icon_textfield">Icon for the textfield</string>
 </resources>

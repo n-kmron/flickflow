@@ -10,7 +10,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import g58008.mobg5.ui.LoginScreen
 import g58008.mobg5.ui.theme.AppTheme
 
 private const val TAG = "MainActivity"
@@ -34,7 +33,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    ProjetMob()
+                    App()
                 }
             }
         }
@@ -96,6 +95,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun AppPreview() {
     AppTheme {
-        ProjetMob()
+        App()
     }
 }

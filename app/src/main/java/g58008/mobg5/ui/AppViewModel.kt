@@ -1,15 +1,16 @@
 package g58008.mobg5.ui
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+
+private const val TAG: String = "VIEW MODEL"
 
 /**
  * ViewModel class responsible for managing the app's UI state and user data.
@@ -43,60 +44,46 @@ class AppViewModel : ViewModel() {
 
 
     /**
-     * Update the app's UI state based on the provided email and password.
-     * Check if the data of fields is correct
+     * Update the game state based on the user data provided by searching a record corresponding to the data.
      *
-     * @param email The email entered by the user.
-     * @param password The password entered by the user.
+     * @param email The valid email entered by the user.
+     * @param password The valid password entered by the user.
      */
     private fun updateGameState(email : String, password: String) {
         // TODO change this condition to match to a real record in db
         if (email == EMAIL_DEBUG){
-            //login matching to a record
-            _uiState.update { currentState ->
-                currentState.copy(
-                    isValidLogin = true,
-                    isPasswordWrong = false,
-                    isEmailWrong = false,
-                )
-            }
+            Log.d(TAG, "Matching record found")
+            _uiState.value = _uiState.value.copy(
+                isValidLogin = true,
+            )
         } else {
-            //login no matching to a record
-            _uiState.update { currentState ->
-                currentState.copy(
-                    isValidLogin = false,
-                    isPasswordWrong = true,
-                    isEmailWrong = true,
-                    currentEmail = email,
-                    currentPassword = password,
-                )
-            }
+            Log.d(TAG, "Matching record not found")
+            _uiState.value = _uiState.value.copy(
+                isValidLogin = true,
+                currentEmail = email,
+                currentPassword = password,
+            )
         }
+        Log.d(TAG, "Game state updated")
     }
 
 
     /**
-     * Check the user's provided data and update the app's UI state accordingly.
-     * - `isEmailValid` checks if the user's entered email is in a valid format.
-     * - `isPasswordValid` checks if the user's entered password meets the criteria (at least 8 characters with an uppercase letter and a digit).
-     *
-     * @return `true` if user data is valid; otherwise, returns `false`.
-    */
-    fun checkUserData(): Boolean {
+     * Check if the user data provided is correct and update game state
+     */
+    fun checkUserData() {
         val isEmailValid = isEmailValid(userEmail)
-        //val isPasswordValid = isPasswordValid(userPassword)
-        val isPasswordValid = true
+        val isPasswordValid = isPasswordValid(userPassword)
 
         _uiState.value = _uiState.value.copy(
-            isEmailFormatWrong = !isEmailValid,
-            isPasswordFormatWrong = !isPasswordValid
+            isEmailFormatValid = isEmailValid,
+            isPasswordFormatValid = isPasswordValid,
         )
         if (isEmailValid && isPasswordValid) {
             updateGameState(userEmail, userPassword)
-            return true
         }
+        Log.d(TAG, "User data checked")
         resetUserData()
-        return false
     }
 
     /**
@@ -117,7 +104,8 @@ class AppViewModel : ViewModel() {
 
 
     /**
-     * Check if a password is at least 8 characters and contain an uppercase and a number
+     * Check if a password is valid
+     * A password is valid if it contains at least 8 characters with an uppercase letter and a digit
      */
     private fun isPasswordValid(password: String): Boolean {
         val upperCaseRegex = ".*[A-Z].*"

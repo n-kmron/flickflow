@@ -1,20 +1,18 @@
 package g58008.mobg5.ui
 
 /**
- * Represents the current UI state of the application.
+ * Representing the UI state of the application.
  *
  * @property currentEmail The current email entered by the user.
  * @property currentPassword The current password entered by the user.
- * @property isEmailWrong Indicates whether the email is in an incorrect format.
- * @property isPasswordWrong Indicates whether the password does not meet the criteria.
- * @property isValidLogin Indicates whether the entered email and password result in a valid login.
+ * @property isEmailFormatValid A boolean indicating whether the email format is valid.
+ * @property isPasswordFormatValid A boolean indicating whether the password format is valid.
+ * @property isValidLogin A boolean indicating whether the login is valid.
  */
 data class AppUiState(
     val currentEmail: String = "",
     val currentPassword: String = "",
-    val isEmailWrong : Boolean = false,
-    val isPasswordWrong : Boolean = false,
-    val isEmailFormatWrong : Boolean = false,
-    val isPasswordFormatWrong: Boolean = false,
+    val isEmailFormatValid : Boolean = true,
+    val isPasswordFormatValid: Boolean = true,
     val isValidLogin : Boolean = false
 )

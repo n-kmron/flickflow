@@ -1,5 +1,6 @@
 package g58008.mobg5.ui
 
+import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -38,22 +39,27 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import g58008.mobg5.AppTopbar
 import g58008.mobg5.R
+
+private const val TAG: String = "LOGIN"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
-    navController: NavHostController,
+    navigate: () -> Unit,
 ) {
     Scaffold(
         modifier = Modifier
             .fillMaxSize(),
         topBar = {
-            LoginHeader()
+            AppTopbar()
         }
     ) {
         Box(
@@ -69,7 +75,7 @@ fun LoginScreen(
                     .padding(32.dp)
             ) {
                 LoginFields(
-                    navController = navController
+                    navigate = navigate
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 LoginFooter()
@@ -78,45 +84,20 @@ fun LoginScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun LoginHeader(
-    modifier: Modifier = Modifier
-) {
-    CenterAlignedTopAppBar(
-        title = {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier
-                    .fillMaxSize()
-            )
-            {
-                Image(
-                    modifier = Modifier
-                        .size(dimensionResource(id = R.dimen.image_size)),
-                    painter = painterResource(R.drawable.esi_logo),
-                    contentDescription = stringResource(id = R.string.app_name)
-                )
-                Text(
-                    text = stringResource(id = R.string.app_name),
-                    style = MaterialTheme.typography.displayLarge,
-                    modifier = Modifier
-                        .align(Alignment.CenterVertically),
-                )
-            }
-        },
-        modifier = modifier
-    )
-}
-
 
 @Composable
 fun LoginFields(
     appViewModel: AppViewModel = viewModel(),
-    navController: NavController,
+    navigate: () -> Unit,
 ) {
     val appUiState by appViewModel.uiState.collectAsState()
+
+    LaunchedEffect(key1 = appUiState, block = {
+        if(appViewModel.uiState.value.isValidLogin) {
+            Log.d(TAG, "Authentication success")
+            navigate()
+        }
+    })
 
     Column(
         modifier = Modifier
@@ -128,36 +109,35 @@ fun LoginFields(
             onUserValueChanged = { appViewModel.updateUserEmail(it) },
             userValue = appViewModel.userEmail,
             isValueWrong = Pair(
-                appUiState.isEmailWrong,
-                stringResource(id = R.string.wrong_email)
+                !appUiState.isValidLogin  && appUiState.currentEmail.isNotEmpty(),
+                stringResource(id = R.string.wrong_credits)
             ),
             isFormatWrong = Pair(
-                appUiState.isEmailFormatWrong,
+                !appUiState.isEmailFormatValid,
                 stringResource(id = R.string.wrong_email_format)
             ),
             onKeyboardDone = { appViewModel.checkUserData() },
             visualTransformation = VisualTransformation.None,
             leadingIcon = R.drawable.email,
         )
-        /*DemoField(
+        MyCustomField(
             placeholder = stringResource(id = R.string.askPassword),
             onUserValueChanged = { appViewModel.updateUserPassword(it) },
             userValue = appViewModel.userPassword,
             isValueWrong = Pair(
-                appUiState.isPasswordWrong,
-                stringResource(id = R.string.wrong_password)
+                !appUiState.isValidLogin && appUiState.currentPassword.isNotEmpty(),
+                stringResource(id = R.string.wrong_credits)
             ),
             isFormatWrong = Pair(
-                appUiState.isPasswordFormatWrong,
+                !appUiState.isPasswordFormatValid,
                 stringResource(id = R.string.wrong_password_format)
             ),
             onKeyboardDone = { appViewModel.checkUserData() },
             visualTransformation = PasswordVisualTransformation(),
             leadingIcon = R.drawable.password,
-        )*/
+        )
         LoginButton(
-            onClick = { appViewModel.checkUserData() },
-            navController = navController,
+            checkUserData = { appViewModel.checkUserData() },
         )
     }
 }
@@ -255,15 +235,10 @@ fun LoginFooter() {
 
 @Composable
 fun LoginButton(
-    onClick: () -> Boolean,
-    navController: NavController,
+    checkUserData: () -> Unit,
 ) {
     Button(
-        onClick = {
-            if(onClick()) {
-                navController.navigate(NavigationDestinations.HOME.name)
-            }
-        },
+        onClick = { checkUserData() },
         modifier = Modifier
             .fillMaxWidth()
     ) {
