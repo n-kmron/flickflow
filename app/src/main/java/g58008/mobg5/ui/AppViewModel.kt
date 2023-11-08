@@ -8,7 +8,6 @@ import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 
 private const val TAG: String = "VIEW MODEL"
 
@@ -23,7 +22,7 @@ private const val TAG: String = "VIEW MODEL"
 class AppViewModel : ViewModel() {
 
     companion object {
-        const val EMAIL_DEBUG: String = "abc@abc.be"
+        const val EMAIL_DEBUG: String = "abc@he2b.be"
     }
     private val _uiState = MutableStateFlow(AppUiState())
     val uiState: StateFlow<AppUiState> = _uiState.asStateFlow()
@@ -59,7 +58,7 @@ class AppViewModel : ViewModel() {
         } else {
             Log.d(TAG, "Matching record not found")
             _uiState.value = _uiState.value.copy(
-                isValidLogin = true,
+                isValidLogin = false,
                 currentEmail = email,
                 currentPassword = password,
             )
