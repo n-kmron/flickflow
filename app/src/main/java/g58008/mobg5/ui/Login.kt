@@ -1,7 +1,7 @@
 package g58008.mobg5.ui
 
 import android.util.Log
-import androidx.annotation.DrawableRes
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,6 +18,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme.shapes
@@ -35,46 +38,45 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import g58008.mobg5.AppTopbar
+import androidx.lifecycle.viewModelScope
 import g58008.mobg5.R
+import kotlinx.coroutines.launch
 
 private const val TAG: String = "LOGIN"
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
     navigate: () -> Unit,
-) {
-    Scaffold(
-        modifier = Modifier
-            .fillMaxSize(),
-        topBar = {
-            AppTopbar()
-        }
+    appViewModel: AppViewModel = viewModel(),
     ) {
-        Box(
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(16.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
             modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(it),
-            contentAlignment = Alignment.Center
+                .fillMaxWidth()
+                .padding(32.dp)
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(32.dp)
-            ) {
-                LoginFields(
-                    navigate = navigate
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                LoginFooter()
-            }
+            LoginFields(
+                navigate = navigate,
+                appViewModel = appViewModel,
+                authUiState = appViewModel.authUiState
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            LoginFooter()
         }
     }
 }
@@ -82,29 +84,35 @@ fun LoginScreen(
 
 @Composable
 fun LoginFields(
-    appViewModel: AppViewModel = viewModel(),
+    appViewModel: AppViewModel,
+    authUiState: AuthUiState,
     navigate: () -> Unit,
 ) {
     val appUiState by appViewModel.uiState.collectAsState()
 
     LaunchedEffect(key1 = appUiState, block = {
-        if(appUiState.isValidLogin) {
-            Log.d(TAG, "Authentication success")
-            navigate()
-        }
+        tryConnection(navigate, appViewModel)
     })
+
+    when (authUiState) {
+        is AuthUiState.Loading -> LoadingScreen(modifier = Modifier.fillMaxSize())
+        is AuthUiState.Error -> ErrorScreen( modifier = Modifier.fillMaxSize())
+        else -> {}
+    }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(32.dp)
     ) {
+        var showPassword by remember { mutableStateOf(false) }
+
         MyCustomField(
             placeholder = stringResource(id = R.string.askEmail),
             onUserValueChanged = { appViewModel.updateUserEmail(it) },
             userValue = appViewModel.userEmail,
             isValueWrong = Pair(
-                !appUiState.isValidLogin  && appUiState.currentEmail.isNotEmpty(),
+                !appUiState.authorized && appUiState.currentEmail.isNotEmpty(),
                 stringResource(id = R.string.wrong_credits)
             ),
             isFormatWrong = Pair(
@@ -112,15 +120,15 @@ fun LoginFields(
                 stringResource(id = R.string.wrong_email_format)
             ),
             onKeyboardDone = { appViewModel.checkUserData() },
-            visualTransformation = VisualTransformation.None,
-            leadingIcon = R.drawable.email,
-        )
+            leadingIcon = Icons.Default.Email,
+            showPassword = true
+        ) { }
         MyCustomField(
             placeholder = stringResource(id = R.string.askPassword),
             onUserValueChanged = { appViewModel.updateUserPassword(it) },
             userValue = appViewModel.userPassword,
             isValueWrong = Pair(
-                !appUiState.isValidLogin && appUiState.currentPassword.isNotEmpty(),
+                !appUiState.authorized && appUiState.currentPassword.isNotEmpty(),
                 stringResource(id = R.string.wrong_credits)
             ),
             isFormatWrong = Pair(
@@ -128,9 +136,10 @@ fun LoginFields(
                 stringResource(id = R.string.wrong_password_format)
             ),
             onKeyboardDone = { appViewModel.checkUserData() },
-            visualTransformation = PasswordVisualTransformation(),
-            leadingIcon = R.drawable.password,
-        )
+            leadingIcon = Icons.Default.Lock,
+            isPassword = true,
+            showPassword = showPassword
+        ) { showPassword = !showPassword }
         LoginButton(
             checkUserData = { appViewModel.checkUserData() },
         )
@@ -145,7 +154,6 @@ fun LoginFields(
  * @param onUserValueChanged A callback function to handle changes to the user's input value.
  * @param isValueWrong Indicates whether the input value is considered wrong.
  * @param isFormatWrong Indicates whether the input value format is considered wrong.
- * @param visualTransformation The visual transformation to apply to the input value (e.g., for password masking).
  * @param onKeyboardDone A callback function triggered when the user presses the "Done" button on the keyboard.
  * @param leadingIcon A number which represent an icon
  *
@@ -159,8 +167,10 @@ fun MyCustomField(
     isFormatWrong: Pair<Boolean, String>,
     onKeyboardDone: () -> Unit,
     userValue: String,
-    visualTransformation: VisualTransformation,
-    @DrawableRes leadingIcon: Int,
+    leadingIcon: ImageVector,
+    isPassword: Boolean = false,
+    showPassword: Boolean,
+    onTogglePasswordVisibility: () -> Unit
 ) {
     OutlinedTextField(
         value = userValue,
@@ -180,17 +190,36 @@ fun MyCustomField(
         },
         isError = isValueWrong.first || isFormatWrong.first,
         leadingIcon = {
-            Box(
-                modifier = Modifier.size(24.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    painter = painterResource(id = leadingIcon),
-                    contentDescription = stringResource(id = R.string.icon_textfield)
-                )
+            Icon(
+                imageVector = leadingIcon,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary
+            )
+        },
+        trailingIcon = {
+            if (isPassword) {
+                Box(
+                    modifier = Modifier.size(24.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    IconButton(
+                        onClick = { onTogglePasswordVisibility() }
+                    ) {
+                        Icon(
+                            painter = painterResource(
+                                if (showPassword) R.drawable.password_show else R.drawable.password_hide
+                            ),
+                            contentDescription = stringResource(id = R.string.icon_toggle_password)
+                        )
+                    }
+                }
             }
         },
-        visualTransformation = visualTransformation,
+        visualTransformation = if (showPassword) {
+            VisualTransformation.None
+        } else {
+            PasswordVisualTransformation()
+        },
         keyboardOptions = KeyboardOptions.Default.copy(
             imeAction = ImeAction.Done
         ),
@@ -238,5 +267,50 @@ fun LoginButton(
             .fillMaxWidth()
     ) {
         Text(text = stringResource(R.string.login), fontSize = 16.sp)
+    }
+}
+
+@Composable
+fun LoadingScreen(modifier: Modifier = Modifier) {
+    Image(
+        modifier = modifier.size(200.dp),
+        painter = painterResource(R.drawable.loading_img),
+        contentDescription = stringResource(R.string.loading)
+    )
+}
+
+@Composable
+fun ErrorScreen(modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.ic_connection_error), contentDescription = ""
+        )
+        Text(text = stringResource(R.string.verify_connection), modifier = Modifier.padding(16.dp))
+    }
+}
+
+/**
+ * Try to connect to the server
+ * @param navigate A callback function to navigate to the next screen
+ * if the connection is successful, navigate to the next screen
+ * else do nothing
+ */
+fun tryConnection(
+    navigate: () -> Unit,
+    appViewModel: AppViewModel,
+) {
+    appViewModel.viewModelScope.launch {
+        appViewModel.uiState.collect { uiState ->
+            if (uiState.authorized) {
+                Log.d(TAG, "Authentication success")
+                navigate()
+            } else {
+                Log.d(TAG, "Authentication failed")
+            }
+        }
     }
 }

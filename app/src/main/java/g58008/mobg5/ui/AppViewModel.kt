@@ -5,9 +5,22 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import g58008.mobg5.network.AuthApi
+import g58008.mobg5.network.AuthBody
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import java.io.IOException
+
+sealed interface AuthUiState {
+    data class Success(val response: String) : AuthUiState
+    object Error : AuthUiState
+    object Loading : AuthUiState
+    object Empty : AuthUiState
+}
+
 
 private const val TAG: String = "VIEW MODEL"
 
@@ -21,11 +34,11 @@ private const val TAG: String = "VIEW MODEL"
  */
 class AppViewModel : ViewModel() {
 
-    companion object {
-        const val EMAIL_DEBUG: String = "abc@he2b.be"
-    }
     private val _uiState = MutableStateFlow(AppUiState())
     val uiState: StateFlow<AppUiState> = _uiState.asStateFlow()
+
+    var authUiState: AuthUiState by mutableStateOf(AuthUiState.Empty)
+        private set
 
     var userEmail by mutableStateOf("")
         private set
@@ -33,7 +46,7 @@ class AppViewModel : ViewModel() {
     var userPassword by mutableStateOf("")
         private set
 
-    fun updateUserEmail(email : String) {
+    fun updateUserEmail(email: String) {
         userEmail = email
     }
 
@@ -48,22 +61,32 @@ class AppViewModel : ViewModel() {
      * @param email The valid email entered by the user.
      * @param password The valid password entered by the user.
      */
-    private fun updateGameState(email : String, password: String) {
-        // TODO change this condition to match to a real record in db
-        if (email == EMAIL_DEBUG){
-            Log.d(TAG, "Matching record found")
-            _uiState.value = _uiState.value.copy(
-                isValidLogin = true,
-            )
-        } else {
-            Log.d(TAG, "Matching record not found")
-            _uiState.value = _uiState.value.copy(
-                isValidLogin = false,
-                currentEmail = email,
-                currentPassword = password,
-            )
+    private fun updateGameState(email: String, password: String) {
+        viewModelScope.launch {
+            authenticate(email, password)
+
+            when (authUiState) {
+                is AuthUiState.Success -> {
+                    Log.d(TAG, "Matching record found")
+                    _uiState.value = _uiState.value.copy(
+                        authorized = true,
+                    )
+                }
+
+                is AuthUiState.Error -> {
+                    Log.d(TAG, "Matching record not found")
+                    _uiState.value = _uiState.value.copy(
+                        authorized = false,
+                        currentEmail = email,
+                        currentPassword = password,
+                    )
+                }
+
+                else -> {
+                    Log.d(TAG, "Actually loading")
+                }
+            }
         }
-        Log.d(TAG, "Game state updated")
     }
 
 
@@ -97,22 +120,46 @@ class AppViewModel : ViewModel() {
      * Check if a string is as an email format
      */
     private fun isEmailValid(email: String): Boolean {
-        val regex = "^[A-Za-z](.*)([@]{1})(.{1,})(\\.)(.{1,})"
+        val regex = "^[A-Za-z0-9](.*)([@]{1})(.{1,})(\\.)(.{1,})"
         return email.matches(regex.toRegex())
     }
 
 
     /**
      * Check if a password is valid
-     * A password is valid if it contains at least 8 characters with an uppercase letter and a digit
+     * A password is valid if it contains at least 6 characters
      */
     private fun isPasswordValid(password: String): Boolean {
-        val upperCaseRegex = ".*[A-Z].*"
-        val digitRegex = ".*\\d.*"
+        return password.length >= 6
+    }
 
-        return password.matches(upperCaseRegex.toRegex()) &&
-                password.matches(digitRegex.toRegex()) &&
-                password.length >= 8
+    /**
+     * Authenticate the user by searching a record corresponding to the data in a server with a retrofit service
+     */
+    private suspend fun authenticate(email: String, password: String) {
+        val body: AuthBody = generateRequestBody(email, password)
+        authUiState = AuthUiState.Loading
+
+        authUiState = try {
+            val response = AuthApi.retrofitService.findRecord(body)
+            if (response.isSuccessful) {
+                Log.d(TAG, response.code().toString() + " " + response.body().toString())
+                AuthUiState.Success(response.body().toString())
+            } else {
+                Log.d(TAG, "Error status : " + response.code().toString())
+                AuthUiState.Error
+            }
+        } catch (e: IOException) {
+            Log.d(TAG, "Exception : ${e.message}")
+            AuthUiState.Error
+        }
+    }
+
+    /**
+     * Generate a request body from the user's email and password as json with serialization
+     */
+    private fun generateRequestBody(email: String, password: String): AuthBody {
+        return AuthBody(email, password)
     }
 
 }
