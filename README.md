@@ -29,20 +29,19 @@ L'application mobile appelle via des services web le backend <Realgood Netflix R
 - Aucun magic number
 - Gestion de la rotation d'écran
 - Gestion des lifecycles
-## Service rest
 
 ## Features :
 
-- **Roulette de Films :**
+**Roulette de Films :**
   - L'utilisateur peut appuyer sur un bouton pour lancer la "roulette" et obtenir une recommandation aléatoire de film disponible sur Netflix.
 
-- **Détails du Film :**
+**Détails du Film :**
   - Affiche les détails du film recommandé, tels que le titre, la description, la note, etc.
 
-- **Bouton de Rejouer :**
+**Bouton de Rejouer :**
   - Permet à l'utilisateur de relancer la roulette pour découvrir un autre film aléatoire.
 
-- **Bouton de Partage :**
+**Bouton de Partage :**
   - Donne à l'utilisateur la possibilité de partager le film recommandé avec ses amis via des applications de messagerie ou sur les réseaux 
 
 
