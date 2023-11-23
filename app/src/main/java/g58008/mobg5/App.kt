@@ -35,7 +35,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import g58008.mobg5.ui.AboutScreen
-import g58008.mobg5.ui.EsiScreen
+import g58008.mobg5.ui.HomeScreen
 import g58008.mobg5.ui.LoginScreen
 
 /**
@@ -61,7 +61,7 @@ fun App(
         }
         composable(Navigation.HOME.name) {
             AppTemplate(navController = navController) {
-                EsiScreen()
+                HomeScreen()
             }
         }
         composable(Navigation.ABOUT.name) {

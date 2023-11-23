@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.sp
 import g58008.mobg5.R
 
 @Composable
-fun EsiScreen() {
+fun HomeScreen() {
     val image = painterResource(R.drawable.esi_logo)
 
     Column(

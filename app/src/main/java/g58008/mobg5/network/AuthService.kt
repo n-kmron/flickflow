@@ -1,6 +1,7 @@
 package g58008.mobg5.network
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -15,10 +16,12 @@ private const val BASE_URL =
 
 private const val API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRuc3Jpdm54bGVlcWR0YnloZnR2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTY5NzE0MDI2MSwiZXhwIjoyMDEyNzE2MjYxfQ.jgJ49-c9Z8iPQnLVTnPlfRZpKwyBKht-OY8wMTceSiM"
 
+private var json = Json {
+    ignoreUnknownKeys = true
+}
+
 private val retrofit = Retrofit.Builder()
-    .addConverterFactory(Json{
-        ignoreUnknownKeys = true
-    }.asConverterFactory("application/json".toMediaType()))
+    .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
     .baseUrl(BASE_URL)
     .build()
 
@@ -41,8 +44,11 @@ data class AuthBody(
 
 @Serializable
 data class AuthResponse(
-    val access_token: String,
-    val token_type: String,
+    @SerialName("access_token")
+    val accessToken: String,
+
+    @SerialName("token_type")
+    val tokenType: String,
 )
 
 object AuthApi {
