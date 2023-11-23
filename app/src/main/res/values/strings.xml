@@ -3,14 +3,24 @@
     <string name="app_name">MOBG5</string>
     <string name="copyrights">© 2023 - All rights reserved.</string>
     <string name="author">Cameron Noupoue</string>
+    <string name="group">E11</string>
+    <string name="id">58008</string>
+
 
     <!-- LOGIN PAGE strings-->
     <string name="askEmail">Enter your email</string>
     <string name="askPassword">Enter your password</string>
     <string name="wrong_email_format">Email format is not correct</string>
     <string name="wrong_credits">Incorrect credits to log in</string>
-    <string name="wrong_password_format">1 maj, 1 number and 8 characters</string>
+    <string name="wrong_password_format">6 characters at least</string>
     <string name="login">Log in</string>
     <string name="login_success">Authentication success</string>
-    <string name="icon_textfield">Icon for the textfield</string>
+    <string name="loading">Loading...</string>
+    <string name="verify_connection">Verify your connexion</string>
+    <string name="icon_toggle_password">Toggle password</string>
+
+    <!-- HOME PAGE strings-->
+    <string name="home">Home</string>
+    <string name="about">About</string>
+
 </resources>
