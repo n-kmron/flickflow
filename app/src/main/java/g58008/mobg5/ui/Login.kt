@@ -293,12 +293,18 @@ fun ErrorScreen(modifier: Modifier = Modifier) {
     }
 }
 
+
 /**
  * Try to connect to the server
  * @param navigate A callback function to navigate to the next screen
  * if the connection is successful, navigate to the next screen
  * else do nothing
  */
+//FIXME (QHB) : I don't understand this code. The name of this function is
+// tryConnection but it's not trying to connect to the server. It should be renamed
+// to something like tryNavigateToNextScreen.
+// Moreover, you just need to check the value of the authorized property of the uiState.
+// Launching a coroutine is not necessary, nor is collecting the uiState.
 fun tryConnection(
     navigate: () -> Unit,
     appViewModel: AppViewModel,

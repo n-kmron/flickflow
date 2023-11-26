@@ -48,6 +48,8 @@ fun App(
 ) {
     val navController = rememberNavController()
 
+    //FIXME (QHB) : You could declare your scaffold here, instead of
+    // using those AppTemplate. It would contain the navHost and the bottom bar.
     NavHost(
         navController = navController,
         startDestination = Navigation.LOGIN.name,
@@ -78,6 +80,9 @@ fun AppTemplate(
     navController: NavHostController,
     content: @Composable (PaddingValues) -> Unit
 ) {
+
+    //FIXME (QHB) : This works, but you can simplify it. You don't need to remember
+    // the current screen and observe it.
     val currentScreen = remember(navController) {
         derivedStateOf {
             val currentRoute = navController.currentBackStackEntry?.destination?.route

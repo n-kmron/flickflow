@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.io.IOException
 
+//FIXME (QHB) : correct, but you will have to be able to explain how sealed classes work at the exam
 sealed interface AuthUiState {
     data class Success(val response: String) : AuthUiState
     object Error : AuthUiState
@@ -61,6 +62,7 @@ class AppViewModel : ViewModel() {
      * @param email The valid email entered by the user.
      * @param password The valid password entered by the user.
      */
+    //FIXME (QHB) : is this method named correctly?
     private fun updateGameState(email: String, password: String) {
         viewModelScope.launch {
             authenticate(email, password)
@@ -129,6 +131,7 @@ class AppViewModel : ViewModel() {
      * Check if a password is valid
      * A password is valid if it contains at least 6 characters
      */
+    //FIXME (QHB) : typically, this kind of rules is enforced on the server side, not on the client side
     private fun isPasswordValid(password: String): Boolean {
         return password.length >= 6
     }

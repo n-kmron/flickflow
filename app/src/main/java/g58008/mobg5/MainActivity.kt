@@ -18,6 +18,13 @@ private const val TAG = "MainActivity"
  * @author Cameron Noupoué
  * @version 1.0
  */
+
+//FIXME (QHB) : There is a crash related to the navigation. To reproduce it,
+// - launch the app
+// - rotate the device to landscape mode
+// - rotate it back to portrait mode,
+// - sign in with the right credentials
+// Check if you did something weird with the backstack or the navController
 class MainActivity : ComponentActivity() {
 
     /**
