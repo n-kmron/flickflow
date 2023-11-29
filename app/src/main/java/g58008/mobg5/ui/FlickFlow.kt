@@ -22,7 +22,7 @@ import g58008.mobg5.R
 
 @Composable
 fun HomeScreen() {
-    val image = painterResource(R.drawable.esi_logo)
+    val image = painterResource(R.drawable.backgound_app)
 
     Column(
         modifier = Modifier
@@ -33,8 +33,8 @@ fun HomeScreen() {
     ) {
         Image(
             painter = image,
-            contentDescription = "ESI LOGO",
-            contentScale = ContentScale.FillWidth
+            contentDescription = "APP PREVIEW",
+            contentScale = ContentScale.FillBounds
         )
     }
 }

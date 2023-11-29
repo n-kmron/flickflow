@@ -46,7 +46,7 @@ import g58008.mobg5.ui.view_model.AppViewModel
  **/
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun App() {
+fun FlickFlow() {
     val navController = rememberNavController()
     var authorized by remember { mutableStateOf(false) }
 
