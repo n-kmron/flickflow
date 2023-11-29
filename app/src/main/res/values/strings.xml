@@ -12,8 +12,8 @@
     <string name="askPassword">Enter your password</string>
     <string name="wrong_email_format">Email format is not correct</string>
     <string name="wrong_credits">Incorrect credits to log in</string>
-    <string name="wrong_password_format">6 characters at least</string>
     <string name="login">Log in</string>
+    <string name="default_exception">Exception</string>
     <string name="loading">Loading...</string>
     <string name="verify_connection">Verify your connexion</string>
     <string name="icon_toggle_password">Toggle password</string>

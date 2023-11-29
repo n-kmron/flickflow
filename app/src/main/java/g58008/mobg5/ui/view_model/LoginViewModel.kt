@@ -1,4 +1,4 @@
-package g58008.mobg5.ui
+package g58008.mobg5.ui.view_model
 
 import android.util.Log
 import androidx.compose.runtime.getValue
@@ -8,13 +8,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import g58008.mobg5.network.AuthApi
 import g58008.mobg5.network.AuthBody
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.io.IOException
 
-//FIXME (QHB) : correct, but you will have to be able to explain how sealed classes work at the exam
+private const val TAG: String = "LOGIN_VIEW_MODEL"
+
 sealed interface AuthUiState {
     data class Success(val response: String) : AuthUiState
     object Error : AuthUiState
@@ -22,21 +20,21 @@ sealed interface AuthUiState {
     object Empty : AuthUiState
 }
 
-
-private const val TAG: String = "VIEW MODEL"
-
 /**
  * ViewModel class responsible for managing the app's UI state and user data.
  * This class handles user input, data validation, and updates to the UI state.
  *
- * @property uiState Represents the current state of the app's user interface.
  * @property userEmail The email entered by the user.
  * @property userPassword The password entered by the user.
+ * @property authUiState The current state of the authentication.
  */
-class AppViewModel : ViewModel() {
+class LoginViewModel : ViewModel(
+) {
 
-    private val _uiState = MutableStateFlow(AppUiState())
-    val uiState: StateFlow<AppUiState> = _uiState.asStateFlow()
+    val appViewModel = AppViewModel()
+
+    var appUiState = appViewModel._uiState
+        private set
 
     var authUiState: AuthUiState by mutableStateOf(AuthUiState.Empty)
         private set
@@ -55,29 +53,29 @@ class AppViewModel : ViewModel() {
         userPassword = password
     }
 
-
     /**
      * Update the game state based on the user data provided by searching a record corresponding to the data.
      *
      * @param email The valid email entered by the user.
      * @param password The valid password entered by the user.
      */
-    //FIXME (QHB) : is this method named correctly?
-    private fun updateGameState(email: String, password: String) {
+    private fun updateAuthState(email: String, password: String) {
         viewModelScope.launch {
+            Log.d(TAG, "before : $email $password")
             authenticate(email, password)
 
             when (authUiState) {
                 is AuthUiState.Success -> {
                     Log.d(TAG, "Matching record found")
-                    _uiState.value = _uiState.value.copy(
+                    appUiState.value = appUiState.value.copy(
                         authorized = true,
                     )
+                    Log.d(TAG, appUiState.value.toString())
                 }
 
                 is AuthUiState.Error -> {
-                    Log.d(TAG, "Matching record not found")
-                    _uiState.value = _uiState.value.copy(
+                    Log.d(TAG, "Connection error")
+                    appUiState.value = appUiState.value.copy(
                         authorized = false,
                         currentEmail = email,
                         currentPassword = password,
@@ -85,7 +83,12 @@ class AppViewModel : ViewModel() {
                 }
 
                 else -> {
-                    Log.d(TAG, "Actually loading")
+                    Log.d(TAG, "Matching record not found")
+                    appUiState.value = appUiState.value.copy(
+                        authorized = false,
+                        currentEmail = email,
+                        currentPassword = password,
+                    )
                 }
             }
         }
@@ -97,24 +100,17 @@ class AppViewModel : ViewModel() {
      */
     fun checkUserData() {
         val isEmailValid = isEmailValid(userEmail)
-        val isPasswordValid = isPasswordValid(userPassword)
 
-        _uiState.value = _uiState.value.copy(
-            isEmailFormatValid = isEmailValid,
-            isPasswordFormatValid = isPasswordValid,
-        )
-        if (isEmailValid && isPasswordValid) {
-            updateGameState(userEmail, userPassword)
+        if (isEmailValid) {
+            updateAuthState(userEmail, userPassword)
         }
-        Log.d(TAG, "User data checked")
         resetUserData()
     }
 
     /**
-     * Reset the user data by clearing the user's email and password fields.
+     * Reset the user data by clearing the user's password fields.
      */
     private fun resetUserData() {
-        updateUserEmail("")
         updateUserPassword("")
     }
 
@@ -126,16 +122,6 @@ class AppViewModel : ViewModel() {
         return email.matches(regex.toRegex())
     }
 
-
-    /**
-     * Check if a password is valid
-     * A password is valid if it contains at least 6 characters
-     */
-    //FIXME (QHB) : typically, this kind of rules is enforced on the server side, not on the client side
-    private fun isPasswordValid(password: String): Boolean {
-        return password.length >= 6
-    }
-
     /**
      * Authenticate the user by searching a record corresponding to the data in a server with a retrofit service
      */
@@ -145,9 +131,14 @@ class AppViewModel : ViewModel() {
 
         authUiState = try {
             val response = AuthApi.retrofitService.findRecord(body)
+            val statusCode = response.code()
+
             if (response.isSuccessful) {
-                Log.d(TAG, response.code().toString() + " " + response.body().toString())
+                Log.d(TAG, statusCode.toString() + " " + response.body().toString())
                 AuthUiState.Success(response.body().toString())
+            } else if(statusCode in 400..404) {
+                Log.d(TAG, "Error status : " + response.code().toString())
+                AuthUiState.Empty
             } else {
                 Log.d(TAG, "Error status : " + response.code().toString())
                 AuthUiState.Error

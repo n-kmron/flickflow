@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -36,7 +37,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -47,22 +47,24 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import g58008.mobg5.R
-import kotlinx.coroutines.launch
+import g58008.mobg5.ui.view_model.LoginViewModel
+import g58008.mobg5.ui.view_model.AuthUiState
 
 private const val TAG: String = "LOGIN"
 
 @Composable
 fun LoginScreen(
     navigate: () -> Unit,
-    appViewModel: AppViewModel = viewModel(),
-    ) {
+    padding: PaddingValues = PaddingValues(16.dp)
+) {
+    val loginViewModel: LoginViewModel = viewModel()
     Box(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(16.dp),
+            .padding(padding),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -72,8 +74,8 @@ fun LoginScreen(
         ) {
             LoginFields(
                 navigate = navigate,
-                appViewModel = appViewModel,
-                authUiState = appViewModel.authUiState
+                loginViewModel = loginViewModel,
+                authUiState = loginViewModel.authUiState
             )
             Spacer(modifier = Modifier.height(16.dp))
             LoginFooter()
@@ -84,19 +86,19 @@ fun LoginScreen(
 
 @Composable
 fun LoginFields(
-    appViewModel: AppViewModel,
+    loginViewModel: LoginViewModel,
     authUiState: AuthUiState,
     navigate: () -> Unit,
 ) {
-    val appUiState by appViewModel.uiState.collectAsState()
+    val appUiState by loginViewModel.appUiState.collectAsState()
 
     LaunchedEffect(key1 = appUiState, block = {
-        tryConnection(navigate, appViewModel)
+        tryNavigateToNextScreen(navigate, loginViewModel)
     })
 
     when (authUiState) {
         is AuthUiState.Loading -> LoadingScreen(modifier = Modifier.fillMaxSize())
-        is AuthUiState.Error -> ErrorScreen( modifier = Modifier.fillMaxSize())
+        is AuthUiState.Error -> ErrorScreen(modifier = Modifier.fillMaxSize())
         else -> {}
     }
 
@@ -109,8 +111,8 @@ fun LoginFields(
 
         MyCustomField(
             placeholder = stringResource(id = R.string.askEmail),
-            onUserValueChanged = { appViewModel.updateUserEmail(it) },
-            userValue = appViewModel.userEmail,
+            onUserValueChanged = { loginViewModel.updateUserEmail(it) },
+            userValue = loginViewModel.userEmail,
             isValueWrong = Pair(
                 !appUiState.authorized && appUiState.currentEmail.isNotEmpty(),
                 stringResource(id = R.string.wrong_credits)
@@ -119,29 +121,29 @@ fun LoginFields(
                 !appUiState.isEmailFormatValid,
                 stringResource(id = R.string.wrong_email_format)
             ),
-            onKeyboardDone = { appViewModel.checkUserData() },
+            onKeyboardDone = { loginViewModel.checkUserData() },
             leadingIcon = Icons.Default.Email,
             showPassword = true
         ) { }
         MyCustomField(
             placeholder = stringResource(id = R.string.askPassword),
-            onUserValueChanged = { appViewModel.updateUserPassword(it) },
-            userValue = appViewModel.userPassword,
+            onUserValueChanged = { loginViewModel.updateUserPassword(it) },
+            userValue = loginViewModel.userPassword,
             isValueWrong = Pair(
                 !appUiState.authorized && appUiState.currentPassword.isNotEmpty(),
                 stringResource(id = R.string.wrong_credits)
             ),
             isFormatWrong = Pair(
-                !appUiState.isPasswordFormatValid,
-                stringResource(id = R.string.wrong_password_format)
+                false,
+                stringResource(id = R.string.default_exception)
             ),
-            onKeyboardDone = { appViewModel.checkUserData() },
+            onKeyboardDone = { loginViewModel.checkUserData() },
             leadingIcon = Icons.Default.Lock,
             isPassword = true,
             showPassword = showPassword
         ) { showPassword = !showPassword }
         LoginButton(
-            checkUserData = { appViewModel.checkUserData() },
+            checkUserData = { loginViewModel.checkUserData() },
         )
     }
 }
@@ -300,23 +302,14 @@ fun ErrorScreen(modifier: Modifier = Modifier) {
  * if the connection is successful, navigate to the next screen
  * else do nothing
  */
-//FIXME (QHB) : I don't understand this code. The name of this function is
-// tryConnection but it's not trying to connect to the server. It should be renamed
-// to something like tryNavigateToNextScreen.
-// Moreover, you just need to check the value of the authorized property of the uiState.
-// Launching a coroutine is not necessary, nor is collecting the uiState.
-fun tryConnection(
+fun tryNavigateToNextScreen(
     navigate: () -> Unit,
-    appViewModel: AppViewModel,
+    loginViewModel: LoginViewModel,
 ) {
-    appViewModel.viewModelScope.launch {
-        appViewModel.uiState.collect { uiState ->
-            if (uiState.authorized) {
-                Log.d(TAG, "Authentication success")
-                navigate()
-            } else {
-                Log.d(TAG, "Authentication failed")
-            }
-        }
+    if (loginViewModel.authUiState is AuthUiState.Success) {
+        Log.d(TAG, "Authentication success")
+        navigate()
+    } else {
+        Log.d(TAG, "Authentication failed")
     }
 }
