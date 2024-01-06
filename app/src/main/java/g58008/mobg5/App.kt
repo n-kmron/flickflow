@@ -36,9 +36,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import g58008.mobg5.ui.AboutScreen
+import g58008.mobg5.ui.FavouritesScreen
 import g58008.mobg5.ui.HomeScreen
 import g58008.mobg5.ui.LoginScreen
-import g58008.mobg5.ui.view_model.AppViewModel
 
 /**
  * A Composable function for the main entry point of the application. It sets up
@@ -79,6 +79,9 @@ fun FlickFlow() {
             }
             composable(Navigation.ABOUT.name) {
                 AboutScreen()
+            }
+            composable(Navigation.FAVOURITES.name) {
+                FavouritesScreen()
             }
         }
     }

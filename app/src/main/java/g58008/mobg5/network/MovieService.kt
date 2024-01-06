@@ -51,11 +51,14 @@ data class MovieResponse(
 @Serializable
 data class MovieResult(
 
+    @SerialName("id")
+    val id: String,
+
     @SerialName("primaryImage")
-    val primaryImage: Image,
+    val image: Image,
 
     @SerialName("titleText")
-    val titleText: TitleText,
+    val title: TitleText,
 
     @SerialName("releaseDate")
     val releaseDate: ReleaseDate,

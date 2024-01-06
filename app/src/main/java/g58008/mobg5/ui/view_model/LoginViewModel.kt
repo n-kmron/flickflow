@@ -61,7 +61,6 @@ class LoginViewModel : ViewModel(
      */
     private fun updateAuthState(email: String, password: String) {
         viewModelScope.launch {
-            Log.d(TAG, "before : $email $password")
             authenticate(email, password)
 
             when (authUiState) {

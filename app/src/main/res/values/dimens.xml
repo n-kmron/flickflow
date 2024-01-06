@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="padding_large">32dp</dimen>
+    <dimen name="padding_small">6dp</dimen>
     <dimen name="image_size">64dp</dimen>
+    <dimen name="cover_image_height">350dp</dimen>
 </resources>

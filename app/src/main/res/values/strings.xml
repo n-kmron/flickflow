@@ -1,7 +1,7 @@
 <resources>
     <!-- APP strings-->
     <string name="app_name">FlickFlow</string>
-    <string name="copyrights">© 2023 - All rights reserved.</string>
+    <string name="copyrights">© 2024 - All rights reserved.</string>
     <string name="author">Cameron Noupoue</string>
     <string name="group">E11</string>
     <string name="id">58008</string>
@@ -20,5 +20,8 @@
 
     <!-- HOME PAGE strings-->
     <string name="spin">Spin</string>
+    <string name="no_movie">Click to get a random film to watch !</string>
+    <string name="see_details">See details</string>
+    <string name="hide_details">Hide details</string>
 
 </resources>

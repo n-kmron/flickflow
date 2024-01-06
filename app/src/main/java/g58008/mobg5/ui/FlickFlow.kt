@@ -11,39 +11,153 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.rememberImagePainter
 import g58008.mobg5.R
-import g58008.mobg5.ui.view_model.LoginViewModel
+import g58008.mobg5.network.ReleaseDate
+import g58008.mobg5.ui.view_model.MovieCallUiState
 import g58008.mobg5.ui.view_model.MovieViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen() {
     val movieViewModel: MovieViewModel = viewModel()
-    val image = painterResource(R.drawable.backgound_app)
+    val movieUiState by movieViewModel.uiState.collectAsState()
+    val coroutineScope = rememberCoroutineScope()
+    var isDetailsVisible by remember { mutableStateOf(false) }
 
+    when (movieViewModel.movieCallUiState) {
+        is MovieCallUiState.Loading -> LoadingScreen(modifier = Modifier.fillMaxSize())
+        is MovieCallUiState.Error -> ErrorScreen(modifier = Modifier.fillMaxSize())
+        else -> {}
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .padding(dimensionResource(id = R.dimen.padding_large))
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Image(
-            painter = image,
-            contentDescription = "APP PREVIEW",
-            contentScale = ContentScale.FillBounds
-        )
-        SpinButton(spin = { movieViewModel.getRandomMovie() })
+        if (movieUiState.isMoviePresent) {
+            DisplayMovieResume(
+                title = movieUiState.movieTitle.text,
+
+                imageUrl = movieUiState.movieImageUrl.url,
+            )
+            if(isDetailsVisible) {
+                DisplayMovieDetails(
+                    position = movieUiState.moviePosition,
+                    releaseDate = movieUiState.movieReleaseDate,
+                )
+                DetailsButton(
+                    onDetailsButtonClick = {
+                        isDetailsVisible = false
+                    },
+                    text = stringResource(R.string.hide_details)
+                )
+            } else {
+                DetailsButton(
+                    onDetailsButtonClick = {
+                        isDetailsVisible = true
+                    },
+                    text = stringResource(R.string.see_details)
+                )
+            }
+        } else {
+            Text(
+                text = stringResource(id = R.string.no_movie),
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.CenterHorizontally)
+                    .padding(vertical = dimensionResource(id = R.dimen.padding_large))
+            )
+        }
+        if (!isDetailsVisible) {
+            SpinButton(spin = {
+                coroutineScope.launch {
+                    movieViewModel.getRandomMovie()
+                }
+            })
+        }
     }
+}
+
+@Composable
+fun DisplayMovieResume(
+    title: String,
+    imageUrl: String,
+) {
+    Column(
+        modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.padding_small))
+    ) {
+        Image(
+            painter = rememberImagePainter(
+                data = imageUrl,
+                builder = {
+                    crossfade(true)
+                }
+            ),
+            contentDescription = "Movie Poster",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .height(dimensionResource(id = R.dimen.cover_image_height))
+        )
+
+        Text(
+            text = title,
+            style = MaterialTheme.typography.displayLarge,
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+        )
+    }
+}
+
+@Composable
+fun DisplayMovieDetails(
+    position: Int,
+    releaseDate: ReleaseDate,
+) {
+    Column(
+        modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.padding_small))
+    ) {
+        Text(
+            text = "Box office rating : $position",
+            style = MaterialTheme.typography.displayMedium,
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+        )
+
+        Text(
+            text = "Release date : ${releaseDate.day}/${releaseDate.month}/${releaseDate.year}",
+            style = MaterialTheme.typography.displayMedium,
+            modifier = Modifier
+                .padding(top = 8.dp)
+                .align(Alignment.CenterHorizontally)
+        )
+    }
+}
+
+@Composable
+fun FavouritesScreen() {
+
 }
 
 @Composable
@@ -78,7 +192,20 @@ fun SpinButton(
 ) {
     Button(
         onClick = { spin() },
-        ) {
+    ) {
         Text(text = stringResource(R.string.spin), fontSize = 16.sp)
     }
 }
+
+@Composable
+fun DetailsButton(
+    onDetailsButtonClick: () -> Unit,
+    text: String
+) {
+    Button(
+        onClick = { onDetailsButtonClick() },
+    ) {
+        Text(text = text, fontSize = 16.sp)
+    }
+}
+
