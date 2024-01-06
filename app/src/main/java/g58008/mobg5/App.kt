@@ -62,7 +62,7 @@ fun FlickFlow() {
     ) { paddingValues ->
         NavHost(
             navController = navController,
-            startDestination = Navigation.LOGIN.name,
+            startDestination = Navigation.HOME.name,
         ) {
             composable(Navigation.LOGIN.name) {
                 LoginScreen(

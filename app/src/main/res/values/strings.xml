@@ -19,5 +19,6 @@
     <string name="icon_toggle_password">Toggle password</string>
 
     <!-- HOME PAGE strings-->
+    <string name="spin">Spin</string>
 
 </resources>
