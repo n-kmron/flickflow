@@ -21,6 +21,8 @@
     <!-- HOME PAGE strings-->
     <string name="spin">Spin</string>
     <string name="no_movie">Click to get a random film to watch !</string>
+    <string name="no_favourites">Your favourite list is empty ! Please add something</string>
+    <string name="add_favourite">Add to favourites</string>
     <string name="see_details">See details</string>
     <string name="hide_details">Hide details</string>
 

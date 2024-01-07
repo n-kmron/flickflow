@@ -28,12 +28,11 @@ sealed interface AuthUiState {
  * @property userPassword The password entered by the user.
  * @property authUiState The current state of the authentication.
  */
-class LoginViewModel : ViewModel(
-) {
+class LoginViewModel : ViewModel() {
 
-    val appViewModel = AppViewModel()
+    private val appViewModel = AppViewModel.getInstance()
 
-    var appUiState = appViewModel._uiState
+    var appUiState = appViewModel.uiState
         private set
 
     var authUiState: AuthUiState by mutableStateOf(AuthUiState.Empty)
@@ -68,6 +67,8 @@ class LoginViewModel : ViewModel(
                     Log.d(TAG, "Matching record found")
                     appUiState.value = appUiState.value.copy(
                         authorized = true,
+                        currentEmail = email,
+                        currentPassword = password,
                     )
                     Log.d(TAG, appUiState.value.toString())
                 }
@@ -98,13 +99,13 @@ class LoginViewModel : ViewModel(
      * Check if the user data provided is correct and update game state
      */
     fun checkUserData() {
-        val isEmailValid = isEmailValid(userEmail)
-
-        if (isEmailValid) {
+        if (isEmailValid(userEmail)) {
             updateAuthState(userEmail, userPassword)
+        } else {
+            resetUserData()
         }
-        resetUserData()
     }
+
 
     /**
      * Reset the user data by clearing the user's password fields.
@@ -135,7 +136,7 @@ class LoginViewModel : ViewModel(
             if (response.isSuccessful) {
                 Log.d(TAG, statusCode.toString() + " " + response.body().toString())
                 AuthUiState.Success(response.body().toString())
-            } else if(statusCode in 400..404) {
+            } else if (statusCode in 400..404) {
                 Log.d(TAG, "Error status : " + response.code().toString())
                 AuthUiState.Empty
             } else {

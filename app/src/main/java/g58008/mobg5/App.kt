@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -39,6 +40,7 @@ import g58008.mobg5.ui.AboutScreen
 import g58008.mobg5.ui.FavouritesScreen
 import g58008.mobg5.ui.HomeScreen
 import g58008.mobg5.ui.LoginScreen
+import g58008.mobg5.ui.view_model.AppViewModel
 
 /**
  * A Composable function for the main entry point of the application. It sets up
@@ -51,6 +53,7 @@ fun FlickFlow() {
     var authorized by remember { mutableStateOf(false) }
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    val appViewModel = AppViewModel()
 
     Scaffold(
         topBar = { AppTopbar(scrollBehavior = scrollBehavior) },
@@ -62,7 +65,7 @@ fun FlickFlow() {
     ) { paddingValues ->
         NavHost(
             navController = navController,
-            startDestination = Navigation.HOME.name,
+            startDestination = Navigation.LOGIN.name,
         ) {
             composable(Navigation.LOGIN.name) {
                 LoginScreen(
@@ -141,11 +144,20 @@ fun AppBottombar(
             }
 
             IconButton(
+                onClick = { navController.navigate(Navigation.FAVOURITES.name) },
+                modifier = Modifier.weight(1f)
+            ) {
+                Icon(
+                    Icons.Default.Star, contentDescription = "Favourites"
+                )
+            }
+
+            IconButton(
                 onClick = { navController.navigate(Navigation.ABOUT.name) },
                 modifier = Modifier.weight(1f)
             ) {
                 Icon(
-                    Icons.Default.Info, contentDescription = "Home"
+                    Icons.Default.Info, contentDescription = "Information"
                 )
             }
         }

@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -38,7 +39,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeScreen() {
     val movieViewModel: MovieViewModel = viewModel()
-    val movieUiState by movieViewModel.uiState.collectAsState()
+    val movieUiState by movieViewModel.appUiState.collectAsState()
     val coroutineScope = rememberCoroutineScope()
     var isDetailsVisible by remember { mutableStateOf(false) }
 
@@ -66,15 +67,21 @@ fun HomeScreen() {
                     position = movieUiState.moviePosition,
                     releaseDate = movieUiState.movieReleaseDate,
                 )
-                DetailsButton(
-                    onDetailsButtonClick = {
+                CustomButton(
+                    onCustomButtonClick = {
+                        movieViewModel.addFavouriteMovie()
+                    },
+                    text = stringResource(R.string.add_favourite)
+                )
+                CustomButton(
+                    onCustomButtonClick = {
                         isDetailsVisible = false
                     },
                     text = stringResource(R.string.hide_details)
                 )
             } else {
-                DetailsButton(
-                    onDetailsButtonClick = {
+                CustomButton(
+                    onCustomButtonClick = {
                         isDetailsVisible = true
                     },
                     text = stringResource(R.string.see_details)
@@ -157,7 +164,18 @@ fun DisplayMovieDetails(
 
 @Composable
 fun FavouritesScreen() {
-
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = stringResource(id = R.string.no_favourites),
+            textAlign = TextAlign.Center
+        )
+    }
 }
 
 @Composable
@@ -198,12 +216,12 @@ fun SpinButton(
 }
 
 @Composable
-fun DetailsButton(
-    onDetailsButtonClick: () -> Unit,
+fun CustomButton(
+    onCustomButtonClick: () -> Unit,
     text: String
 ) {
     Button(
-        onClick = { onDetailsButtonClick() },
+        onClick = { onCustomButtonClick() },
     ) {
         Text(text = text, fontSize = 16.sp)
     }

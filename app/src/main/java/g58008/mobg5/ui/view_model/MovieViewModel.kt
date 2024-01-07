@@ -1,21 +1,20 @@
 package g58008.mobg5.ui.view_model
 
 import android.util.Log
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import g58008.mobg5.database.MovieItem
+import g58008.mobg5.model.Repository
 import g58008.mobg5.network.Image
 import g58008.mobg5.network.MovieApi
 import g58008.mobg5.network.MovieResponse
 import g58008.mobg5.network.MovieResult
 import g58008.mobg5.network.ReleaseDate
 import g58008.mobg5.network.TitleText
-import g58008.mobg5.ui.MovieUiState
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import retrofit2.Response
 import java.io.IOException
@@ -31,12 +30,14 @@ sealed interface MovieCallUiState {
 
 class MovieViewModel : ViewModel() {
 
-    private val _uiState = MutableStateFlow(MovieUiState())
-    var uiState: StateFlow<MovieUiState> = _uiState.asStateFlow()
+    private val appViewModel = AppViewModel.getInstance()
 
+    var appUiState = appViewModel.uiState
+        private set
     var movieCallUiState: MovieCallUiState by mutableStateOf(MovieCallUiState.Empty)
         private set
 
+    private val favouriteMovies : MutableState<List<MovieItem>> = mutableStateOf(listOf())
 
     private fun updateMovieState(
         id: String,
@@ -45,7 +46,7 @@ class MovieViewModel : ViewModel() {
         releaseDate: ReleaseDate,
         position: Int
     ) {
-        _uiState.value = _uiState.value.copy(
+        appUiState.value = appUiState.value.copy(
             isMoviePresent = true,
             movieId = id,
             movieImageUrl = image,
@@ -53,7 +54,7 @@ class MovieViewModel : ViewModel() {
             movieReleaseDate = releaseDate,
             moviePosition = position,
         )
-        Log.d(TAG, "uiState updated: ${_uiState.value}")
+        Log.d(TAG, "uiState updated: ${appUiState.value}")
     }
 
     suspend fun getRandomMovie() {
@@ -84,6 +85,26 @@ class MovieViewModel : ViewModel() {
                 Log.e(TAG, "getRandomMovie - failed: ${e.message}")
                 MovieCallUiState.Error
             }
+        }
+    }
+
+    fun addFavouriteMovie() {
+        viewModelScope.launch {
+            Repository.addFavourite(appUiState.value.movieId, appUiState.value.currentEmail)
+            favouriteMovies.value = Repository.getFavourites(appUiState.value.currentEmail)
+        }
+    }
+
+    fun deleteFavouriteMovie() {
+        viewModelScope.launch {
+            Repository.deleteFavourite(appUiState.value.movieId, appUiState.value.currentEmail)
+            favouriteMovies.value = Repository.getFavourites(appUiState.value.currentEmail)
+        }
+    }
+
+    init {
+        viewModelScope.launch {
+            favouriteMovies.value = Repository.getFavourites(appUiState.value.currentEmail)
         }
     }
 }
