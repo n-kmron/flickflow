@@ -14,6 +14,6 @@ interface MovieDAO {
     @Query("SELECT * FROM movie_favourite WHERE user = :user")
     suspend fun getFavourites(user: String): List<MovieItem>
 
-    @Query("DELETE FROM movie_favourite WHERE user = :user AND movie = :movie")
-    suspend fun deleteFavourite(user: String, movie: String)
+    @Query("DELETE FROM movie_favourite WHERE user = :user AND movieId = :movieId")
+    suspend fun deleteFavourite(user: String, movieId: String)
 }

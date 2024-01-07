@@ -1,20 +1,22 @@
 package g58008.mobg5.ui
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.shapes
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -69,7 +71,7 @@ fun HomeScreen() {
 
                 imageUrl = movieUiState.movieImageUrl.url,
             )
-            if(isDetailsVisible) {
+            if (isDetailsVisible) {
                 DisplayMovieDetails(
                     position = movieUiState.moviePosition,
                     releaseDate = movieUiState.movieReleaseDate,
@@ -187,30 +189,59 @@ fun FavouritesScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        if(favouriteList.isNotEmpty()) {
+        if (favouriteList.isNotEmpty()) {
             LazyColumn(modifier = modifier) {
 
                 items(favouriteList.size) { index ->
-                    Box(
-                        contentAlignment = Alignment.CenterStart,
+                    Column(
                         modifier = Modifier
                             .height(64.dp)
                             .fillMaxWidth()
                             .padding(8.dp)
+                            .background(
+                                color = MaterialTheme.colorScheme.primaryContainer,
+                                shape = shapes.medium
+                            ),
+                        verticalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            text = favouriteList[index].movie,
-                            modifier = Modifier.fillMaxHeight(),
-                            textAlign = TextAlign.Center
+                            text = favouriteList[index].movieTitle,
                         )
+                        Column (
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(8.dp),
+                            horizontalAlignment = Alignment.End
+                        ){
+                            Button(
+                                onClick = {
+                                    //Repository.deleteFavourite(favouriteList[index].movieId, appUiState.value.currentEmail)
+                                    //favouriteList = Repository.getFavourites(appUiState.value.currentEmail)
+                                },
+                                modifier = Modifier
+                                    .size(120.dp)
+                            ) {
+                                Text(text = stringResource(R.string.see_details))
+                            }
+                            Button(
+                                onClick = {
+                                    //Repository.deleteFavourite(favouriteList[index].movieId, appUiState.value.currentEmail)
+                                    //favouriteList = Repository.getFavourites(appUiState.value.currentEmail)
+                                },
+                                modifier = Modifier
+                                    .size(100.dp)
+                            ) {
+                                Text(text = stringResource(R.string.delete_favourite))
+                            }
+                        }
                     }
                 }
             }
         } else
-        Text(
-            text = stringResource(id = R.string.no_favourites),
-            textAlign = TextAlign.Center
-        )
+            Text(
+                text = stringResource(id = R.string.no_favourites),
+                textAlign = TextAlign.Center
+            )
     }
 }
 

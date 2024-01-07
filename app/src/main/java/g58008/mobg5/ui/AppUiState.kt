@@ -11,6 +11,8 @@ import g58008.mobg5.network.TitleText
  * @property currentPassword The current password entered by the user.
  * @property isEmailFormatValid A boolean indicating whether the email format is valid.
  * @property authorized A boolean indicating whether the user is authenticated.
+ * @property isMoviePresent A boolean indicating whether a movie is present.
+ * @property moviePosition The position of the movie in the box office.
  */
 data class AppUiState(
     //login state

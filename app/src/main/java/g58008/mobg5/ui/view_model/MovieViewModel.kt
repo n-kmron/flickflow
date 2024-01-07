@@ -90,7 +90,7 @@ class MovieViewModel : ViewModel() {
 
     fun addFavouriteMovie() {
         viewModelScope.launch {
-            Repository.addFavourite(appUiState.value.movieId, appUiState.value.currentEmail)
+            Repository.addFavourite(appUiState.value.movieId, appUiState.value.movieTitle.text, appUiState.value.currentEmail)
             favouriteMovies.value = Repository.getFavourites(appUiState.value.currentEmail)
         }
     }

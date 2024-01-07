@@ -13,10 +13,10 @@ object Repository {
         if (database == null) database = MovieDatabase.getInstance(context)
     }
 
-    suspend fun addFavourite(movie: String, user: String) {
+    suspend fun addFavourite(movie: String, title : String, user: String) {
         Log.d("REPOSITORY", "addFavourite for $user : $movie")
         database?.let { theDatabase ->
-            val movieItem = MovieItem(user = user, movie = movie)
+            val movieItem = MovieItem(user = user, movieId = movie, movieTitle = title)
             theDatabase.movieDao().insertMovie(movieItem)
         }
     }
