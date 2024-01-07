@@ -1,5 +1,6 @@
 package g58008.mobg5
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -36,6 +37,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import g58008.mobg5.model.Repository
 import g58008.mobg5.ui.AboutScreen
 import g58008.mobg5.ui.FavouritesScreen
 import g58008.mobg5.ui.HomeScreen
@@ -46,6 +48,7 @@ import g58008.mobg5.ui.view_model.AppViewModel
  * A Composable function for the main entry point of the application. It sets up
  * navigation using a NavHost, starting with the "LOGIN" destination.
  **/
+@SuppressLint("StateFlowValueCalledInComposition")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FlickFlow() {

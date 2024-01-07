@@ -2,18 +2,22 @@ package g58008.mobg5.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,7 +35,10 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberImagePainter
 import g58008.mobg5.R
+import g58008.mobg5.database.MovieItem
+import g58008.mobg5.model.Repository
 import g58008.mobg5.network.ReleaseDate
+import g58008.mobg5.ui.view_model.AppViewModel
 import g58008.mobg5.ui.view_model.MovieCallUiState
 import g58008.mobg5.ui.view_model.MovieViewModel
 import kotlinx.coroutines.launch
@@ -163,7 +170,16 @@ fun DisplayMovieDetails(
 }
 
 @Composable
-fun FavouritesScreen() {
+fun FavouritesScreen(
+    modifier: Modifier = Modifier
+) {
+    val appUiState = AppViewModel.getInstance().uiState
+    var favouriteList by remember { mutableStateOf<List<MovieItem>>(emptyList()) }
+
+    LaunchedEffect(appUiState) {
+        favouriteList = Repository.getFavourites(appUiState.value.currentEmail)
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -171,6 +187,26 @@ fun FavouritesScreen() {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        if(favouriteList.isNotEmpty()) {
+            LazyColumn(modifier = modifier) {
+
+                items(favouriteList.size) { index ->
+                    Box(
+                        contentAlignment = Alignment.CenterStart,
+                        modifier = Modifier
+                            .height(64.dp)
+                            .fillMaxWidth()
+                            .padding(8.dp)
+                    ) {
+                        Text(
+                            text = favouriteList[index].movie,
+                            modifier = Modifier.fillMaxHeight(),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+            }
+        } else
         Text(
             text = stringResource(id = R.string.no_favourites),
             textAlign = TextAlign.Center
