@@ -1,6 +1,5 @@
 package g58008.mobg5
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -24,9 +23,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
@@ -36,32 +32,30 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import g58008.mobg5.model.Repository
 import g58008.mobg5.ui.AboutScreen
 import g58008.mobg5.ui.FavouritesScreen
 import g58008.mobg5.ui.HomeScreen
 import g58008.mobg5.ui.LoginScreen
-import g58008.mobg5.ui.view_model.AppViewModel
 
 /**
  * A Composable function for the main entry point of the application. It sets up
  * navigation using a NavHost, starting with the "LOGIN" destination.
  **/
-@SuppressLint("StateFlowValueCalledInComposition")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FlickFlow() {
     val navController = rememberNavController()
-    var authorized by remember { mutableStateOf(false) }
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-    val appViewModel = AppViewModel()
 
     Scaffold(
         topBar = { AppTopbar(scrollBehavior = scrollBehavior) },
         bottomBar = {
-            if (authorized) {
+            val navBackStackEntry by navController.currentBackStackEntryAsState()
+            val currentDestination = navBackStackEntry?.destination
+            if (currentDestination?.route != Navigation.LOGIN.name) {
                 AppBottombar(navController = navController)
             }
         }
@@ -75,7 +69,6 @@ fun FlickFlow() {
                     padding = paddingValues,
                     navigate = {
                         navController.navigate(Navigation.HOME.name)
-                        authorized = true
                     }
 
                 )
