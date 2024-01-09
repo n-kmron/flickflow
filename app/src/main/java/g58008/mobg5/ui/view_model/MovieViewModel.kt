@@ -88,16 +88,15 @@ class MovieViewModel : ViewModel() {
         }
     }
 
-    fun addFavouriteMovie() {
-        viewModelScope.launch {
-            Repository.addFavourite(appUiState.value.movieId, appUiState.value.movieTitle.text, appUiState.value.currentEmail)
-            favouriteMovies.value = Repository.getFavourites(appUiState.value.currentEmail)
-        }
-    }
 
-    fun deleteFavouriteMovie() {
+    fun updateFavourite(movieId : String) {
         viewModelScope.launch {
-            Repository.deleteFavourite(appUiState.value.movieId, appUiState.value.currentEmail)
+            //if repo.getFavourite(movieId, currentEmail) exists
+            if(1 == 2) {
+                Repository.deleteFavourite(movieId, appUiState.value.currentEmail)
+            } else {
+                Repository.addFavourite(movieId, appUiState.value.movieTitle.text, appUiState.value.currentEmail)
+            }
             favouriteMovies.value = Repository.getFavourites(appUiState.value.currentEmail)
         }
     }
