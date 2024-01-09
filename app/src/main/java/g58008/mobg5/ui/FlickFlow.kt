@@ -11,10 +11,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.shapes
 import androidx.compose.material3.Text
@@ -28,10 +33,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -75,12 +82,11 @@ fun HomeScreen() {
                 DisplayMovieDetails(
                     position = movieUiState.moviePosition,
                     releaseDate = movieUiState.movieReleaseDate,
-                )
-                CustomButton(
-                    onCustomButtonClick = {
-                        movieViewModel.addFavouriteMovie()
-                    },
-                    text = stringResource(R.string.add_favourite)
+                    updateFavourite = {
+                        coroutineScope.launch {
+                            movieViewModel.updateFavourite(movieUiState.movieId)
+                        }
+                    }
                 )
                 CustomButton(
                     onCustomButtonClick = {
@@ -150,23 +156,34 @@ fun DisplayMovieResume(
 fun DisplayMovieDetails(
     position: Int,
     releaseDate: ReleaseDate,
+    updateFavourite: () -> Unit
 ) {
     Column(
-        modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.padding_small))
+        modifier = Modifier
+            .padding(vertical = dimensionResource(id = R.dimen.padding_small))
+            .fillMaxSize()
+            //center the column
+            .wrapContentSize(Alignment.Center)
     ) {
         Text(
-            text = "Box office rating : $position",
+            text = stringResource(R.string.box_office_rating, position),
             style = MaterialTheme.typography.displayMedium,
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
         )
 
         Text(
-            text = "Release date : ${releaseDate.day}/${releaseDate.month}/${releaseDate.year}",
+            text = stringResource(
+                R.string.release_date,
+                releaseDate.day,
+                releaseDate.month,
+                releaseDate.year
+            ),
             style = MaterialTheme.typography.displayMedium,
             modifier = Modifier
                 .padding(top = 8.dp)
-                .align(Alignment.CenterHorizontally)
+        )
+        FavouriteButton(
+            onClick = { updateFavourite() },
+            color = Color.Yellow
         )
     }
 }
@@ -193,46 +210,38 @@ fun FavouritesScreen(
             LazyColumn(modifier = modifier) {
 
                 items(favouriteList.size) { index ->
-                    Column(
+                    Row(
                         modifier = Modifier
-                            .height(64.dp)
                             .fillMaxWidth()
                             .padding(8.dp)
                             .background(
                                 color = MaterialTheme.colorScheme.primaryContainer,
                                 shape = shapes.medium
-                            ),
-                        verticalArrangement = Arrangement.SpaceBetween
+                            )
+                            .padding(dimensionResource(id = R.dimen.padding_small)),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
                             text = favouriteList[index].movieTitle,
-                        )
-                        Column (
+                            style = MaterialTheme.typography.displayMedium,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
                             modifier = Modifier
-                                .fillMaxSize()
-                                .padding(8.dp),
-                            horizontalAlignment = Alignment.End
-                        ){
-                            Button(
-                                onClick = {
-                                    //Repository.deleteFavourite(favouriteList[index].movieId, appUiState.value.currentEmail)
-                                    //favouriteList = Repository.getFavourites(appUiState.value.currentEmail)
-                                },
-                                modifier = Modifier
-                                    .size(120.dp)
-                            ) {
-                                Text(text = stringResource(R.string.see_details))
-                            }
-                            Button(
-                                onClick = {
-                                    //Repository.deleteFavourite(favouriteList[index].movieId, appUiState.value.currentEmail)
-                                    //favouriteList = Repository.getFavourites(appUiState.value.currentEmail)
-                                },
-                                modifier = Modifier
-                                    .size(100.dp)
-                            ) {
-                                Text(text = stringResource(R.string.delete_favourite))
-                            }
+                                .width(dimensionResource(id = R.dimen.favourite_title_display))
+                        )
+                        Row(
+                            horizontalArrangement = Arrangement.End,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            CustomButton(
+                                onCustomButtonClick = { /*TODO*/ },
+                                text = stringResource(R.string.see_details)
+                            )
+                            FavouriteButton(
+                                onClick = {},
+                                color = Color.Yellow
+                            )
                         }
                     }
                 }
@@ -279,6 +288,24 @@ fun SpinButton(
         onClick = { spin() },
     ) {
         Text(text = stringResource(R.string.spin), fontSize = 16.sp)
+    }
+}
+
+@Composable
+fun FavouriteButton(
+    onClick: () -> Unit,
+    color: Color = MaterialTheme.colorScheme.primary
+) {
+    Button(
+        onClick = { onClick() },
+    ) {
+        Icon(
+            imageVector = Icons.Default.Star,
+            contentDescription = null,
+            tint = color,
+            modifier = Modifier
+                .size(16.dp)
+        )
     }
 }
 

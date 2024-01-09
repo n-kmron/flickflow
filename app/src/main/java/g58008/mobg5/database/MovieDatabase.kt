@@ -10,7 +10,6 @@ abstract class MovieDatabase : RoomDatabase() {
 
     abstract fun movieDao(): MovieDAO
 
-    //companion object is a singleton with more control
     /*
     When a context is needed, it can be passed as a parameter using an activity,
     or one can use Activity.applicationContext, which returns the application context from any activity context.
