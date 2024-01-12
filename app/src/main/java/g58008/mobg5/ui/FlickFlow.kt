@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -41,20 +40,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberImagePainter
 import g58008.mobg5.R
 import g58008.mobg5.database.MovieItem
 import g58008.mobg5.model.Repository
 import g58008.mobg5.network.ReleaseDate
-import g58008.mobg5.ui.view_model.AppViewModel
 import g58008.mobg5.ui.view_model.MovieCallUiState
 import g58008.mobg5.ui.view_model.MovieViewModel
 import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen() {
-    val movieViewModel: MovieViewModel = viewModel()
+    val movieViewModel = remember { MovieViewModel }
     val movieUiState by movieViewModel.appUiState.collectAsState()
     val coroutineScope = rememberCoroutineScope()
     var isDetailsVisible by remember { mutableStateOf(false) }
@@ -80,14 +77,14 @@ fun HomeScreen() {
             )
             if (isDetailsVisible) {
                 DisplayMovieDetails(
+                    isFavourite = movieViewModel.isFavourite(movieUiState.movieId),
                     position = movieUiState.moviePosition,
-                    releaseDate = movieUiState.movieReleaseDate,
-                    updateFavourite = {
-                        coroutineScope.launch {
-                            movieViewModel.updateFavourite(movieUiState.movieId)
-                        }
+                    releaseDate = movieUiState.movieReleaseDate
+                ) {
+                    coroutineScope.launch {
+                        movieViewModel.updateFavourite(movieUiState.movieId)
                     }
-                )
+                }
                 CustomButton(
                     onCustomButtonClick = {
                         isDetailsVisible = false
@@ -154,6 +151,7 @@ fun DisplayMovieResume(
 
 @Composable
 fun DisplayMovieDetails(
+    isFavourite: Boolean,
     position: Int,
     releaseDate: ReleaseDate,
     updateFavourite: () -> Unit
@@ -162,8 +160,6 @@ fun DisplayMovieDetails(
         modifier = Modifier
             .padding(vertical = dimensionResource(id = R.dimen.padding_small))
             .fillMaxSize()
-            //center the column
-            .wrapContentSize(Alignment.Center)
     ) {
         Text(
             text = stringResource(R.string.box_office_rating, position),
@@ -183,7 +179,7 @@ fun DisplayMovieDetails(
         )
         FavouriteButton(
             onClick = { updateFavourite() },
-            color = Color.Yellow
+            isFavourite = isFavourite
         )
     }
 }
@@ -192,11 +188,12 @@ fun DisplayMovieDetails(
 fun FavouritesScreen(
     modifier: Modifier = Modifier
 ) {
-    val appUiState = AppViewModel.getInstance().uiState
+    val movieViewModel = remember { MovieViewModel }
+    val movieUiState by movieViewModel.appUiState.collectAsState()
     var favouriteList by remember { mutableStateOf<List<MovieItem>>(emptyList()) }
 
-    LaunchedEffect(appUiState) {
-        favouriteList = Repository.getFavourites(appUiState.value.currentEmail)
+    LaunchedEffect(movieUiState) {
+        favouriteList = movieViewModel.getFavouritesFromCurrentUser()
     }
 
     Column(
@@ -239,8 +236,8 @@ fun FavouritesScreen(
                                 text = stringResource(R.string.see_details)
                             )
                             FavouriteButton(
-                                onClick = {},
-                                color = Color.Yellow
+                                onClick = { movieViewModel.updateFavourite(favouriteList[index].movieId) },
+                                isFavourite = movieViewModel.isFavourite(favouriteList[index].movieId)
                             )
                         }
                     }
@@ -294,7 +291,7 @@ fun SpinButton(
 @Composable
 fun FavouriteButton(
     onClick: () -> Unit,
-    color: Color = MaterialTheme.colorScheme.primary
+    isFavourite: Boolean
 ) {
     Button(
         onClick = { onClick() },
@@ -302,7 +299,7 @@ fun FavouriteButton(
         Icon(
             imageVector = Icons.Default.Star,
             contentDescription = null,
-            tint = color,
+            tint = if (isFavourite) Color.Yellow else Color.Gray,
             modifier = Modifier
                 .size(16.dp)
         )

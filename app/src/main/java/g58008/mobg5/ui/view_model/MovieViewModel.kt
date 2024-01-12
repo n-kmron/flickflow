@@ -28,7 +28,10 @@ sealed interface MovieCallUiState {
     object Empty : MovieCallUiState
 }
 
-class MovieViewModel : ViewModel() {
+/**
+ * MovieViewModel is a singleton class as an object.
+ */
+object MovieViewModel : ViewModel() {
 
     private val appViewModel = AppViewModel.getInstance()
 
@@ -88,17 +91,25 @@ class MovieViewModel : ViewModel() {
         }
     }
 
-
     fun updateFavourite(movieId : String) {
         viewModelScope.launch {
             //if repo.getFavourite(movieId, currentEmail) exists
-            if(1 == 2) {
+            if(Repository.getFavouriteWithId(appUiState.value.currentEmail, movieId) != null) {
                 Repository.deleteFavourite(movieId, appUiState.value.currentEmail)
             } else {
                 Repository.addFavourite(movieId, appUiState.value.movieTitle.text, appUiState.value.currentEmail)
             }
             favouriteMovies.value = Repository.getFavourites(appUiState.value.currentEmail)
+
         }
+    }
+
+    fun isFavourite(movieId : String) : Boolean {
+        return favouriteMovies.value.any { it.movieId == movieId }
+    }
+
+    suspend fun getFavouritesFromCurrentUser(): List<MovieItem> {
+        return Repository.getFavourites(appUiState.value.currentEmail)
     }
 
     init {

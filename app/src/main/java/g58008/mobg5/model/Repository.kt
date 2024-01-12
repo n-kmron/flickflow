@@ -29,6 +29,14 @@ object Repository {
         return emptyList()
     }
 
+    suspend fun getFavouriteWithId(user: String, movie: String): MovieItem? {
+        database?.let { theDatabase ->
+            Log.d("REPOSITORY", "getFavouriteWithId for $user : ${theDatabase.movieDao().getFavouriteWithId(user, movie)}")
+            return theDatabase.movieDao().getFavouriteWithId(user, movie)
+        }
+        return null
+    }
+
     suspend fun deleteFavourite(movie: String, user: String) {
         Log.d("REPOSITORY", "deleteFavourite: $movie")
         database?.let { theDatabase ->
