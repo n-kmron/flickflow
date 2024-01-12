@@ -11,6 +11,7 @@ import g58008.mobg5.database.MovieItem
 import g58008.mobg5.model.Repository
 import g58008.mobg5.network.Image
 import g58008.mobg5.network.MovieApi
+import g58008.mobg5.network.MovieListResponse
 import g58008.mobg5.network.MovieResponse
 import g58008.mobg5.network.MovieResult
 import g58008.mobg5.network.ReleaseDate
@@ -40,7 +41,7 @@ object MovieViewModel : ViewModel() {
     var movieCallUiState: MovieCallUiState by mutableStateOf(MovieCallUiState.Empty)
         private set
 
-    private val favouriteMovies : MutableState<List<MovieItem>> = mutableStateOf(listOf())
+    private val favouriteMovies: MutableState<List<MovieItem>> = mutableStateOf(listOf())
 
     private fun updateMovieState(
         id: String,
@@ -60,12 +61,42 @@ object MovieViewModel : ViewModel() {
         Log.d(TAG, "uiState updated: ${appUiState.value}")
     }
 
+    suspend fun getMovie(movieId: String) {
+        viewModelScope.launch {
+            movieCallUiState = MovieCallUiState.Loading
+            movieCallUiState = try {
+                val response: Response<MovieResponse> = MovieApi.retrofitService.getMovie(movieId)
+
+                if (response.isSuccessful) {
+                    Log.d(TAG, "getMovie $movieId : api call successful")
+                    val movieResponse: MovieResult? = response.body()?.results
+                    if (movieResponse != null) {
+                        updateMovieState(
+                            movieResponse.id,
+                            movieResponse.title,
+                            movieResponse.image,
+                            movieResponse.releaseDate,
+                            0,
+                        )
+                    }
+                    MovieCallUiState.Success("ok")
+                } else {
+                    Log.e(TAG, "getMovie $movieId - failed with code: ${response.code()}")
+                    MovieCallUiState.Empty
+                }
+            } catch (e: IOException) {
+                Log.e(TAG, "getMovie $movieId - failed: ${e.message}")
+                MovieCallUiState.Error
+            }
+        }
+    }
+
     suspend fun getRandomMovie() {
         viewModelScope.launch {
 
             movieCallUiState = MovieCallUiState.Loading
             movieCallUiState = try {
-                val response: Response<MovieResponse> = MovieApi.retrofitService.getRandomMovie()
+                val response: Response<MovieListResponse> = MovieApi.retrofitService.getRandomMovie()
 
                 if (response.isSuccessful) {
                     val movieResponse: MovieResult? = response.body()?.results?.get(0)
@@ -76,7 +107,7 @@ object MovieViewModel : ViewModel() {
                             movieResponse.title,
                             movieResponse.image,
                             movieResponse.releaseDate,
-                            movieResponse.position,
+                            0,
                         )
                     }
                     MovieCallUiState.Success(movieResponse.toString())
@@ -91,20 +122,24 @@ object MovieViewModel : ViewModel() {
         }
     }
 
-    fun updateFavourite(movieId : String) {
+    fun updateFavourite(movieId: String) {
         viewModelScope.launch {
             //if repo.getFavourite(movieId, currentEmail) exists
-            if(Repository.getFavouriteWithId(appUiState.value.currentEmail, movieId) != null) {
+            if (Repository.getFavouriteWithId(appUiState.value.currentEmail, movieId) != null) {
                 Repository.deleteFavourite(movieId, appUiState.value.currentEmail)
             } else {
-                Repository.addFavourite(movieId, appUiState.value.movieTitle.text, appUiState.value.currentEmail)
+                Repository.addFavourite(
+                    movieId,
+                    appUiState.value.movieTitle.text,
+                    appUiState.value.currentEmail
+                )
             }
             favouriteMovies.value = Repository.getFavourites(appUiState.value.currentEmail)
 
         }
     }
 
-    fun isFavourite(movieId : String) : Boolean {
+    fun isFavourite(movieId: String): Boolean {
         return favouriteMovies.value.any { it.movieId == movieId }
     }
 

@@ -43,7 +43,6 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
 import g58008.mobg5.R
 import g58008.mobg5.database.MovieItem
-import g58008.mobg5.model.Repository
 import g58008.mobg5.network.ReleaseDate
 import g58008.mobg5.ui.view_model.MovieCallUiState
 import g58008.mobg5.ui.view_model.MovieViewModel
@@ -186,10 +185,12 @@ fun DisplayMovieDetails(
 
 @Composable
 fun FavouritesScreen(
+    navigate: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val movieViewModel = remember { MovieViewModel }
     val movieUiState by movieViewModel.appUiState.collectAsState()
+    val coroutineScope = rememberCoroutineScope()
     var favouriteList by remember { mutableStateOf<List<MovieItem>>(emptyList()) }
 
     LaunchedEffect(movieUiState) {
@@ -232,7 +233,12 @@ fun FavouritesScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             CustomButton(
-                                onCustomButtonClick = { /*TODO*/ },
+                                onCustomButtonClick = {
+                                    coroutineScope.launch {
+                                        movieViewModel.getMovie(favouriteList[index].movieId)
+                                        navigate()
+                                    }
+                                },
                                 text = stringResource(R.string.see_details)
                             )
                             FavouriteButton(

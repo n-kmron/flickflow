@@ -80,7 +80,11 @@ fun FlickFlow() {
                 AboutScreen()
             }
             composable(Navigation.FAVOURITES.name) {
-                FavouritesScreen()
+                FavouritesScreen(
+                    navigate = {
+                        navController.navigate(Navigation.HOME.name)
+                    }
+                )
             }
         }
     }

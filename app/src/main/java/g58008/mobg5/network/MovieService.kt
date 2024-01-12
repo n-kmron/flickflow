@@ -8,8 +8,10 @@ import okhttp3.MediaType.Companion.toMediaType
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.Headers
 import retrofit2.http.POST
+import retrofit2.http.Path
 
 private const val BASE_URL =
     "https://moviesdatabase.p.rapidapi.com"
@@ -26,12 +28,6 @@ private val retrofit = Retrofit.Builder()
     .build()
 
 interface MovieService {
-    @Headers(
-        "X-RapidAPI-Key: $API_KEY",
-        "X-RapidAPI-Host: moviesdatabase.p.rapidapi.com",
-        "Host: moviesdatabase.p.rapidapi.com"
-    )
-
     /**
      * This request require a param "list" which can be:
      * - top_boxoffice_200
@@ -39,13 +35,29 @@ interface MovieService {
      * - and other here : https://rapidapi.com/SAdrian/api/moviesdatabase/details
      */
     @GET("titles/random?list=top_boxoffice_200&limit=1")
-    suspend fun getRandomMovie() : Response<MovieResponse>
+    suspend fun getRandomMovie(
+        @Header("X-RapidAPI-Key") apiKey: String = API_KEY,
+        @Header("X-RapidAPI-Host") apiHost: String = "moviesdatabase.p.rapidapi.com"
+    ) : Response<MovieListResponse>
+
+    @GET("/titles/{id}")
+    suspend fun getMovie(
+        @Path("id") movieId: String,
+        @Header("X-RapidAPI-Key") apiKey: String = API_KEY,
+        @Header("X-RapidAPI-Host") apiHost: String = "moviesdatabase.p.rapidapi.com"
+    ) : Response<MovieResponse>
 }
+
+@Serializable
+data class MovieListResponse(
+    @SerialName("results")
+    val results: List<MovieResult>
+)
 
 @Serializable
 data class MovieResponse(
     @SerialName("results")
-    val results: List<MovieResult>
+    val results: MovieResult
 )
 
 @Serializable
@@ -63,8 +75,14 @@ data class MovieResult(
     @SerialName("releaseDate")
     val releaseDate: ReleaseDate,
 
-    @SerialName("position")
-    val position: Int
+    @SerialName("ratingsSummary")
+    val ratingsSummary: RatingsSummary,
+
+    @SerialName("genres")
+    val genres: Genres,
+
+    @SerialName("plot")
+    val plot: Plot
 )
 
 @Serializable
@@ -82,6 +100,38 @@ data class ReleaseDate(
     val day: Int,
     val month: Int,
     val year: Int
+)
+
+@Serializable
+data class RatingsSummary(
+    @SerialName("aggregateRating")
+    val aggregateRating: Double,
+
+    @SerialName("voteCount")
+    val voteCount: Int
+)
+
+@Serializable
+data class Genres(
+    @SerialName("genres")
+    val genres: List<Genre>
+)
+
+@Serializable
+data class Genre(
+    val text: String,
+)
+
+@Serializable
+data class Plot(
+    @SerialName("plotText")
+    val plotText: Markdown,
+)
+
+@Serializable
+data class Markdown(
+    @SerialName("plainText")
+    val plainText: String
 )
 
 object MovieApi {
