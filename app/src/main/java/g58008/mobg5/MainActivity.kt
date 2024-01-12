@@ -19,9 +19,6 @@ private const val TAG = "MainActivity"
  */
 class MainActivity : ComponentActivity() {
 
-    /**
-     * When the system create the application
-     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreated called")

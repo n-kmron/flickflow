@@ -14,12 +14,13 @@
     <string name="wrong_credits">Incorrect credits to log in</string>
     <string name="login">Log in</string>
     <string name="default_exception">Exception</string>
-    <string name="loading">Loading...</string>
+    <string name="loading">Loading…</string>
     <string name="verify_connection">Verify your connexion</string>
     <string name="icon_toggle_password">Toggle password</string>
 
     <!-- HOME PAGE strings-->
     <string name="spin">Spin</string>
+    <string name="share_movie">Watch now this film !</string>
     <string name="no_movie">Click to get a random film to watch !</string>
     <string name="no_favourites">Your favourite list is empty ! Please add something</string>
     <string name="add_favourite">Add to favourites</string>
@@ -30,5 +31,5 @@
     <string name="rating">Rating: %1\$s/10 (%2\$s votes)</string>
     <string name="gender">Gender: %1\$s</string>
     <string name="release_date">Release date : %1\$d/%2\$d/%3\$d</string>
-
+    <string name="share_movie_text">Rate: %2\$s\nYear: %3\$s</string>
 </resources>

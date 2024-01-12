@@ -4,6 +4,5 @@ enum class Navigation {
     LOGIN,
     HOME,
     ABOUT,
-    DETAILS,
     FAVOURITES,
 }

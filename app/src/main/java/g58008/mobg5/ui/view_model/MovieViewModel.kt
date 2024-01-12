@@ -1,5 +1,8 @@
 package g58008.mobg5.ui.view_model
 
+import android.annotation.SuppressLint
+import android.content.Context
+import android.content.Intent
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -7,6 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import g58008.mobg5.R
 import g58008.mobg5.database.MovieItem
 import g58008.mobg5.model.Repository
 import g58008.mobg5.network.Image
@@ -126,7 +130,8 @@ object MovieViewModel : ViewModel() {
                 handleSuccessfulResponse(handleResponse(response.body()))
             } else {
                 Log.e(TAG, "API call failed with code: ${response.code()}")
-                return MovieCallUiState.Empty            }
+                return MovieCallUiState.Empty
+            }
         } catch (e: IOException) {
             Log.e(TAG, "API call failed: ${e.message}")
             return MovieCallUiState.Error
@@ -155,6 +160,28 @@ object MovieViewModel : ViewModel() {
      */
     fun isFavourite(movieId: String): Boolean {
         return favouriteMovies.value.any { it.movieId == movieId }
+    }
+
+    @SuppressLint("StringFormatInvalid")
+    fun shareMovie(context: Context) {
+        val content = context.getString(
+            R.string.share_movie_text,
+            appUiState.value.movieTitle.text,
+            appUiState.value.movieRating,
+            appUiState.value.movieReleaseDate.year.toString()
+        )
+
+        val intent = Intent(Intent.ACTION_SEND_MULTIPLE).apply {
+            type = "*/*"
+            //EXTRA_SUBJECT will be used in the other app as the title of the message
+            putExtra(Intent.EXTRA_SUBJECT, appUiState.value.movieTitle.text)
+            putExtra(Intent.EXTRA_TITLE, appUiState.value.movieTitle.text)
+            putExtra(Intent.EXTRA_TEXT, content)
+        }
+
+        context.startActivity(
+            Intent.createChooser(intent, context.getString(R.string.share_movie))
+        )
     }
 
     init {

@@ -27,6 +27,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -77,7 +78,8 @@ fun FlickFlow() {
                 )
             }
             composable(Navigation.HOME.name) {
-                HomeScreen()
+                val context = LocalContext.current
+                HomeScreen(context = context)
             }
             composable(Navigation.ABOUT.name) {
                 AboutScreen()

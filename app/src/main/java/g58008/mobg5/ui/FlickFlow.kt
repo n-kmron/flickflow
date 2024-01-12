@@ -1,5 +1,6 @@
 package g58008.mobg5.ui
 
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -16,6 +17,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
@@ -41,6 +43,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import g58008.mobg5.R
 import g58008.mobg5.database.MovieItem
@@ -50,7 +53,9 @@ import g58008.mobg5.ui.view_model.MovieViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(
+    context: Context
+) {
     val movieViewModel = remember { MovieViewModel }
     val movieUiState by movieViewModel.appUiState.collectAsState()
     val coroutineScope = rememberCoroutineScope()
@@ -73,6 +78,7 @@ fun HomeScreen() {
             DisplayMovieResume(
                 title = movieUiState.movieTitle.text,
                 imageUrl = movieUiState.movieImageUrl.url,
+                displayImage = !isDetailsVisible
             )
             if (isDetailsVisible) {
                 DisplayMovieDetails(
@@ -81,12 +87,14 @@ fun HomeScreen() {
                     voteCount = movieUiState.movieVoteCount,
                     plot = movieUiState.moviePlot,
                     gender = movieUiState.movieGender,
-                    releaseDate = movieUiState.movieReleaseDate
-                ) {
-                    coroutineScope.launch {
-                        movieViewModel.updateFavourite(movieUiState.movieId)
-                    }
-                }
+                    releaseDate = movieUiState.movieReleaseDate,
+                    updateFavourite = {
+                        coroutineScope.launch {
+                            movieViewModel.updateFavourite(movieUiState.movieId)
+                        }
+                    },
+                    shareMovie = { movieViewModel.shareMovie(context) }
+                )
                 CustomButton(
                     onCustomButtonClick = {
                         isDetailsVisible = false
@@ -120,26 +128,30 @@ fun HomeScreen() {
     }
 }
 
+@OptIn(ExperimentalCoilApi::class)
 @Composable
 fun DisplayMovieResume(
     title: String,
     imageUrl: String,
+    displayImage: Boolean
 ) {
     Column(
         modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.padding_small))
     ) {
-        Image(
-            painter = rememberImagePainter(
-                data = imageUrl,
-                builder = {
-                    crossfade(true)
-                }
-            ),
-            contentDescription = "Movie Poster",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .height(dimensionResource(id = R.dimen.cover_image_height))
-        )
+        if (displayImage) {
+            Image(
+                painter = rememberImagePainter(
+                    data = imageUrl,
+                    builder = {
+                        crossfade(true)
+                    }
+                ),
+                contentDescription = "Movie Poster",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .height(dimensionResource(id = R.dimen.cover_image_height))
+            )
+        }
         Text(
             text = title,
             style = MaterialTheme.typography.displayLarge,
@@ -157,7 +169,8 @@ fun DisplayMovieDetails(
     plot: String,
     gender: String,
     releaseDate: ReleaseDate,
-    updateFavourite: () -> Unit
+    updateFavourite: () -> Unit,
+    shareMovie: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -203,6 +216,18 @@ fun DisplayMovieDetails(
             onClick = { updateFavourite() },
             isFavourite = isFavourite
         )
+        Button(
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally),
+            onClick = { shareMovie() },
+        ) {
+            Icon(
+                imageVector = Icons.Default.Share,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(16.dp)
+            )
+        }
     }
 }
 
@@ -322,7 +347,7 @@ fun FavouriteButton(
     onClick: () -> Unit,
     isFavourite: Boolean
 ) {
-    Column (
+    Column(
         modifier = Modifier
             .fillMaxWidth()
     ) {
