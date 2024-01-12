@@ -3,6 +3,7 @@ package g58008.mobg5.ui
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,6 +13,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -72,7 +75,6 @@ fun HomeScreen() {
         if (movieUiState.isMoviePresent) {
             DisplayMovieResume(
                 title = movieUiState.movieTitle.text,
-
                 imageUrl = movieUiState.movieImageUrl.url,
             )
             if (isDetailsVisible) {
@@ -142,7 +144,6 @@ fun DisplayMovieResume(
             modifier = Modifier
                 .height(dimensionResource(id = R.dimen.cover_image_height))
         )
-
         Text(
             text = title,
             style = MaterialTheme.typography.displayLarge,
@@ -165,14 +166,14 @@ fun DisplayMovieDetails(
     Column(
         modifier = Modifier
             .padding(vertical = dimensionResource(id = R.dimen.padding_small))
-            .fillMaxSize()
     ) {
         Text(
             text = plot,
             style = MaterialTheme.typography.displayMedium,
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
         )
         Divider(
-            color = Color.Black,
             thickness = 1.dp,
             modifier = Modifier.fillMaxWidth()
         )
@@ -181,12 +182,14 @@ fun DisplayMovieDetails(
             style = MaterialTheme.typography.displayMedium,
             modifier = Modifier
                 .padding(top = 8.dp)
+                .align(Alignment.CenterHorizontally)
         )
         Text(
             text = stringResource(R.string.gender, gender),
             style = MaterialTheme.typography.displayMedium,
             modifier = Modifier
                 .padding(top = 8.dp)
+                .align(Alignment.CenterHorizontally)
         )
         Text(
             text = stringResource(
@@ -198,6 +201,7 @@ fun DisplayMovieDetails(
             style = MaterialTheme.typography.displayMedium,
             modifier = Modifier
                 .padding(top = 8.dp)
+                .align(Alignment.CenterHorizontally)
         )
         FavouriteButton(
             onClick = { updateFavourite() },
@@ -322,16 +326,24 @@ fun FavouriteButton(
     onClick: () -> Unit,
     isFavourite: Boolean
 ) {
-    Button(
-        onClick = { onClick() },
+    Column (
+        modifier = Modifier
+            .fillMaxWidth()
     ) {
-        Icon(
-            imageVector = Icons.Default.Star,
-            contentDescription = null,
-            tint = if (isFavourite) Color.Yellow else Color.Gray,
+        Button(
             modifier = Modifier
-                .size(16.dp)
-        )
+                .align(Alignment.CenterHorizontally),
+            onClick = { onClick() },
+        ) {
+            Icon(
+                imageVector = Icons.Default.Star,
+                contentDescription = null,
+                tint = if (isFavourite) Color.Yellow else Color.Gray,
+                modifier = Modifier
+                    .size(16.dp)
+
+            )
+        }
     }
 }
 
