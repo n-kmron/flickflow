@@ -18,6 +18,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.shapes
@@ -77,7 +78,10 @@ fun HomeScreen() {
             if (isDetailsVisible) {
                 DisplayMovieDetails(
                     isFavourite = movieViewModel.isFavourite(movieUiState.movieId),
-                    position = movieUiState.moviePosition,
+                    rating = movieUiState.movieRating,
+                    voteCount = movieUiState.movieVoteCount,
+                    plot = movieUiState.moviePlot,
+                    gender = movieUiState.movieGender,
                     releaseDate = movieUiState.movieReleaseDate
                 ) {
                     coroutineScope.launch {
@@ -151,7 +155,10 @@ fun DisplayMovieResume(
 @Composable
 fun DisplayMovieDetails(
     isFavourite: Boolean,
-    position: Int,
+    rating: Double,
+    voteCount: Int,
+    plot: String,
+    gender: String,
     releaseDate: ReleaseDate,
     updateFavourite: () -> Unit
 ) {
@@ -161,10 +168,26 @@ fun DisplayMovieDetails(
             .fillMaxSize()
     ) {
         Text(
-            text = stringResource(R.string.box_office_rating, position),
+            text = plot,
             style = MaterialTheme.typography.displayMedium,
         )
-
+        Divider(
+            color = Color.Black,
+            thickness = 1.dp,
+            modifier = Modifier.fillMaxWidth()
+        )
+        Text(
+            text = stringResource(R.string.rating, rating, voteCount),
+            style = MaterialTheme.typography.displayMedium,
+            modifier = Modifier
+                .padding(top = 8.dp)
+        )
+        Text(
+            text = stringResource(R.string.gender, gender),
+            style = MaterialTheme.typography.displayMedium,
+            modifier = Modifier
+                .padding(top = 8.dp)
+        )
         Text(
             text = stringResource(
                 R.string.release_date,
@@ -239,7 +262,7 @@ fun FavouritesScreen(
                                         navigate()
                                     }
                                 },
-                                text = stringResource(R.string.see_details)
+                                text = stringResource(R.string.load)
                             )
                             FavouriteButton(
                                 onClick = { movieViewModel.updateFavourite(favouriteList[index].movieId) },

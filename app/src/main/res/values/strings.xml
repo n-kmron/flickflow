@@ -25,8 +25,10 @@
     <string name="add_favourite">Add to favourites</string>
     <string name="delete_favourite">Delete</string>
     <string name="see_details">See details</string>
+    <string name="load">Load</string>
     <string name="hide_details">Hide details</string>
-    <string name="box_office_rating">Box office rating : %1$d</string>
+    <string name="rating">Rating: %1\$s/10 (%2\$s votes)</string>
+    <string name="gender">Gender: %1\$s</string>
     <string name="release_date">Release date : %1\$d/%2\$d/%3\$d</string>
 
 </resources>

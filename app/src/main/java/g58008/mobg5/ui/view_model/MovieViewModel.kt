@@ -11,8 +11,6 @@ import g58008.mobg5.database.MovieItem
 import g58008.mobg5.model.Repository
 import g58008.mobg5.network.Image
 import g58008.mobg5.network.MovieApi
-import g58008.mobg5.network.MovieListResponse
-import g58008.mobg5.network.MovieResponse
 import g58008.mobg5.network.MovieResult
 import g58008.mobg5.network.ReleaseDate
 import g58008.mobg5.network.TitleText
@@ -48,7 +46,10 @@ object MovieViewModel : ViewModel() {
         title: TitleText,
         image: Image,
         releaseDate: ReleaseDate,
-        position: Int
+        rating: Double,
+        voteCount: Int,
+        plot: String,
+        genre: String
     ) {
         appUiState.value = appUiState.value.copy(
             isMoviePresent = true,
@@ -56,69 +57,33 @@ object MovieViewModel : ViewModel() {
             movieImageUrl = image,
             movieTitle = title,
             movieReleaseDate = releaseDate,
-            moviePosition = position,
+            movieGender = genre,
+            movieRating = rating,
+            movieVoteCount = voteCount,
+            moviePlot = plot
         )
         Log.d(TAG, "uiState updated: ${appUiState.value}")
     }
 
     suspend fun getMovie(movieId: String) {
         viewModelScope.launch {
-            movieCallUiState = MovieCallUiState.Loading
-            movieCallUiState = try {
-                val response: Response<MovieResponse> = MovieApi.retrofitService.getMovie(movieId)
-
-                if (response.isSuccessful) {
-                    Log.d(TAG, "getMovie $movieId : api call successful")
-                    val movieResponse: MovieResult? = response.body()?.results
-                    if (movieResponse != null) {
-                        updateMovieState(
-                            movieResponse.id,
-                            movieResponse.title,
-                            movieResponse.image,
-                            movieResponse.releaseDate,
-                            0,
-                        )
-                    }
-                    MovieCallUiState.Success("ok")
-                } else {
-                    Log.e(TAG, "getMovie $movieId - failed with code: ${response.code()}")
-                    MovieCallUiState.Empty
+            movieCallUiState = apiCall(
+                apiCall = { MovieApi.retrofitService.getMovie(movieId) },
+                handleResponse = { response ->
+                    response?.results
                 }
-            } catch (e: IOException) {
-                Log.e(TAG, "getMovie $movieId - failed: ${e.message}")
-                MovieCallUiState.Error
-            }
+            )
         }
     }
 
     suspend fun getRandomMovie() {
         viewModelScope.launch {
-
-            movieCallUiState = MovieCallUiState.Loading
-            movieCallUiState = try {
-                val response: Response<MovieListResponse> = MovieApi.retrofitService.getRandomMovie()
-
-                if (response.isSuccessful) {
-                    val movieResponse: MovieResult? = response.body()?.results?.get(0)
-                    Log.d(TAG, "getRandomMovie : api call successful")
-                    if (movieResponse != null) {
-                        updateMovieState(
-                            movieResponse.id,
-                            movieResponse.title,
-                            movieResponse.image,
-                            movieResponse.releaseDate,
-                            0,
-                        )
-                    }
-                    MovieCallUiState.Success(movieResponse.toString())
-                } else {
-                    Log.e(TAG, "getRandomMovie - failed with code: ${response.code()}")
-                    MovieCallUiState.Empty
+            movieCallUiState = apiCall(
+                apiCall = { MovieApi.retrofitService.getRandomMovie() },
+                handleResponse = { response ->
+                    response?.results?.get(0)
                 }
-            } catch (e: IOException) {
-                Log.e(TAG, "getRandomMovie - failed: ${e.message}")
-                MovieCallUiState.Error
-            }
+            )
         }
     }
 
@@ -137,6 +102,42 @@ object MovieViewModel : ViewModel() {
             favouriteMovies.value = Repository.getFavourites(appUiState.value.currentEmail)
 
         }
+    }
+
+    private suspend fun <T, R> apiCall(
+        apiCall: suspend () -> Response<T>,
+        handleResponse: (T?) -> R
+    ): MovieCallUiState {
+        return try {
+            movieCallUiState = MovieCallUiState.Loading
+            val response = apiCall()
+
+            if (response.isSuccessful) {
+                handleSuccessfulResponse(handleResponse(response.body()))
+            } else {
+                Log.e(TAG, "API call failed with code: ${response.code()}")
+                return MovieCallUiState.Empty            }
+        } catch (e: IOException) {
+            Log.e(TAG, "API call failed: ${e.message}")
+            return MovieCallUiState.Error
+        }
+    }
+
+    private fun handleSuccessfulResponse(movieResult: Any?): MovieCallUiState {
+        Log.d(TAG, "API call successful")
+        if (movieResult is MovieResult) {
+            updateMovieState(
+                movieResult.id,
+                movieResult.title,
+                movieResult.image,
+                movieResult.releaseDate,
+                movieResult.ratingsSummary.aggregateRating,
+                movieResult.ratingsSummary.voteCount,
+                movieResult.plot.plotText.plainText,
+                movieResult.genres.genres[0].text
+            )
+        }
+        return MovieCallUiState.Success(movieResult.toString())
     }
 
     fun isFavourite(movieId: String): Boolean {

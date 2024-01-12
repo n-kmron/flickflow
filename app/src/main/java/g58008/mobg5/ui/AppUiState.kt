@@ -12,20 +12,23 @@ import g58008.mobg5.network.TitleText
  * @property isEmailFormatValid A boolean indicating whether the email format is valid.
  * @property authorized A boolean indicating whether the user is authenticated.
  * @property isMoviePresent A boolean indicating whether a movie is present.
- * @property moviePosition The position of the movie in the box office.
+ * @property movieVoteCount The vote count of the movie.
  */
 data class AppUiState(
     //login state
     val currentEmail: String = "",
     val currentPassword: String = "",
-    val isEmailFormatValid : Boolean = true,
-    val authorized : Boolean = false,
+    val isEmailFormatValid: Boolean = true,
+    val authorized: Boolean = false,
 
     //movie state
-    val isMoviePresent : Boolean = false,
+    val isMoviePresent: Boolean = false,
     val movieId: String = "",
-    val movieImageUrl : Image = Image(""),
-    val movieTitle : TitleText = TitleText(""),
-    val movieReleaseDate : ReleaseDate = ReleaseDate(1, 1, 2000),
-    val moviePosition : Int = 0,
+    val moviePlot: String = "",
+    val movieImageUrl: Image = Image(""),
+    val movieTitle: TitleText = TitleText(""),
+    val movieReleaseDate: ReleaseDate = ReleaseDate(1, 1, 2000),
+    val movieGender: String = "",
+    val movieRating: Double = 0.0,
+    val movieVoteCount: Int = 0,
 )

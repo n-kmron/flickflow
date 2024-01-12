@@ -34,13 +34,13 @@ interface MovieService {
      * - titles
      * - and other here : https://rapidapi.com/SAdrian/api/moviesdatabase/details
      */
-    @GET("titles/random?list=top_boxoffice_200&limit=1")
+    @GET("titles/random?list=top_boxoffice_200&limit=1&info=base_info")
     suspend fun getRandomMovie(
         @Header("X-RapidAPI-Key") apiKey: String = API_KEY,
         @Header("X-RapidAPI-Host") apiHost: String = "moviesdatabase.p.rapidapi.com"
     ) : Response<MovieListResponse>
 
-    @GET("/titles/{id}")
+    @GET("/titles/{id}?info=base_info")
     suspend fun getMovie(
         @Path("id") movieId: String,
         @Header("X-RapidAPI-Key") apiKey: String = API_KEY,
