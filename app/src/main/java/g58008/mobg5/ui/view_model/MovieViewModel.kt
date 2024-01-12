@@ -1,6 +1,5 @@
 package g58008.mobg5.ui.view_model
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.util.Log
@@ -162,21 +161,13 @@ object MovieViewModel : ViewModel() {
         return favouriteMovies.value.any { it.movieId == movieId }
     }
 
-    @SuppressLint("StringFormatInvalid")
-    fun shareMovie(context: Context) {
-        val content = context.getString(
-            R.string.share_movie_text,
-            appUiState.value.movieTitle.text,
-            appUiState.value.movieRating,
-            appUiState.value.movieReleaseDate.year.toString()
-        )
-
+    fun shareMovie(context: Context, shareContent : String) {
         val intent = Intent(Intent.ACTION_SEND_MULTIPLE).apply {
             type = "*/*"
             //EXTRA_SUBJECT will be used in the other app as the title of the message
             putExtra(Intent.EXTRA_SUBJECT, appUiState.value.movieTitle.text)
             putExtra(Intent.EXTRA_TITLE, appUiState.value.movieTitle.text)
-            putExtra(Intent.EXTRA_TEXT, content)
+            putExtra(Intent.EXTRA_TEXT, shareContent)
         }
 
         context.startActivity(

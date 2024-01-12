@@ -61,12 +61,13 @@ fun HomeScreen(
     val movieUiState by movieViewModel.appUiState.collectAsState()
     val coroutineScope = rememberCoroutineScope()
     var isDetailsVisible by rememberSaveable { mutableStateOf(false) }
+    val shareContent = stringResource(
+        id = R.string.share_movie_text,
+        movieUiState.movieTitle.text,
+        movieUiState.movieRating.toString(),
+        movieUiState.movieReleaseDate.year.toString()
+    )
 
-    when (movieViewModel.movieCallUiState) {
-        is MovieCallUiState.Loading -> LoadingScreen(modifier = Modifier.fillMaxSize())
-        is MovieCallUiState.Error -> ErrorScreen(modifier = Modifier.fillMaxSize())
-        else -> {}
-    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -75,6 +76,12 @@ fun HomeScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        when (movieViewModel.movieCallUiState) {
+            is MovieCallUiState.Loading -> LoadingScreen()
+            is MovieCallUiState.Error -> ErrorScreen()
+            else -> {}
+        }
+
         if (movieUiState.isMoviePresent) {
             DisplayMovieResume(
                 title = movieUiState.movieTitle.text,
@@ -94,7 +101,9 @@ fun HomeScreen(
                             movieViewModel.updateFavourite(movieUiState.movieId)
                         }
                     },
-                    shareMovie = { movieViewModel.shareMovie(context) }
+                    shareMovie = {
+                        movieViewModel.shareMovie(context, shareContent)
+                    }
                 )
                 CustomButton(
                     onCustomButtonClick = {
