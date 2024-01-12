@@ -3,7 +3,6 @@ package g58008.mobg5.ui
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,8 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -109,7 +106,6 @@ fun HomeScreen() {
                 text = stringResource(id = R.string.no_movie),
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier
-                    .fillMaxWidth()
                     .align(Alignment.CenterHorizontally)
                     .padding(vertical = dimensionResource(id = R.dimen.padding_large))
             )
@@ -221,7 +217,7 @@ fun FavouritesScreen(
     var favouriteList by remember { mutableStateOf<List<MovieItem>>(emptyList()) }
 
     LaunchedEffect(movieUiState) {
-        favouriteList = movieViewModel.getFavouritesFromCurrentUser()
+        favouriteList = movieViewModel.favouriteMovies.value
     }
 
     Column(

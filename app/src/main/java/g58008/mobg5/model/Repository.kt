@@ -14,8 +14,8 @@ object Repository {
     }
 
     suspend fun addFavourite(movie: String, title : String, user: String) {
-        Log.d("REPOSITORY", "addFavourite for $user : $movie")
         database?.let { theDatabase ->
+            Log.d("REPOSITORY", "addFavourite for $user : $movie")
             val movieItem = MovieItem(user = user, movieId = movie, movieTitle = title)
             theDatabase.movieDao().insertMovie(movieItem)
         }

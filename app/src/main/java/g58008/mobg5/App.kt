@@ -1,5 +1,6 @@
 package g58008.mobg5
 
+import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -25,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -47,15 +49,16 @@ import g58008.mobg5.ui.LoginScreen
 @Composable
 fun FlickFlow() {
     val navController = rememberNavController()
-
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
     Scaffold(
         topBar = { AppTopbar(scrollBehavior = scrollBehavior) },
         bottomBar = {
             val navBackStackEntry by navController.currentBackStackEntryAsState()
             val currentDestination = navBackStackEntry?.destination
-            if (currentDestination?.route != Navigation.LOGIN.name) {
+            if (currentDestination?.route != Navigation.LOGIN.name && !isLandscape) {
                 AppBottombar(navController = navController)
             }
         }

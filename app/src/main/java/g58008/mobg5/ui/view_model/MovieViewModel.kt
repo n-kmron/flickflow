@@ -39,7 +39,7 @@ object MovieViewModel : ViewModel() {
     var movieCallUiState: MovieCallUiState by mutableStateOf(MovieCallUiState.Empty)
         private set
 
-    private val favouriteMovies: MutableState<List<MovieItem>> = mutableStateOf(listOf())
+    val favouriteMovies: MutableState<List<MovieItem>> = mutableStateOf(listOf())
 
     private fun updateMovieState(
         id: String,
@@ -87,6 +87,11 @@ object MovieViewModel : ViewModel() {
         }
     }
 
+    /**
+     * Update favourites of the current user
+     * @if the movie is already in the favourites, delete it
+     * @else add it
+     */
     fun updateFavourite(movieId: String) {
         viewModelScope.launch {
             //if repo.getFavourite(movieId, currentEmail) exists
@@ -104,6 +109,11 @@ object MovieViewModel : ViewModel() {
         }
     }
 
+    /**
+     * Update the game state based on the user data provided by searching a record corresponding to the data.
+     * R is the type of the response body -> in function of if it's the random or the id call, the response body is in a list or not so we need to get the first element of the list
+     * T is the type of the response -> in function of if it's the random or the id call, the response is a list or not
+     */
     private suspend fun <T, R> apiCall(
         apiCall: suspend () -> Response<T>,
         handleResponse: (T?) -> R
@@ -140,12 +150,11 @@ object MovieViewModel : ViewModel() {
         return MovieCallUiState.Success(movieResult.toString())
     }
 
+    /**
+     * Check if the movie is in the favourites of the current user
+     */
     fun isFavourite(movieId: String): Boolean {
         return favouriteMovies.value.any { it.movieId == movieId }
-    }
-
-    suspend fun getFavouritesFromCurrentUser(): List<MovieItem> {
-        return Repository.getFavourites(appUiState.value.currentEmail)
     }
 
     init {
