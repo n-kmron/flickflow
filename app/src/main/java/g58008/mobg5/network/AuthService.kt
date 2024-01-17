@@ -14,7 +14,7 @@ import retrofit2.http.POST
 private const val BASE_URL =
     "https://dnsrivnxleeqdtbyhftv.supabase.co"
 
-private const val API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRuc3Jpdm54bGVlcWR0YnloZnR2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTY5NzE0MDI2MSwiZXhwIjoyMDEyNzE2MjYxfQ.jgJ49-c9Z8iPQnLVTnPlfRZpKwyBKht-OY8wMTceSiM"
+private const val API_KEY = ""
 
 private var json = Json {
     ignoreUnknownKeys = true
