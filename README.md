@@ -1,65 +1,61 @@
 # FlickFlow
 
-Ce dépôt contient les sources du projet `Cameron`.
+The application allows users to discover movies currently ranked in the top 200 Box Office randomly. If the user has an account on the application, they can share and save the movie to their favorites.
 
-## WARNING : update 
+## Setup
 
-Pour le bien de mon projet, j'ai du changer d'API. Pour les détails de cette API, ils ont été mis à jour dans la section `Backend` de ce README. Ce changement a peu de répercussions mis à part que je ne peux pas afficher d'images du film comme vous me l'avez suggéré. J'espère que vous comprenez ce changement.
+You have to setup api key for the movies database [movie database](https://rapidapi.com/SAdrian/api/moviesdatabase/details) in `MovieService.kt`
 
-## Description
+You have to put your own api service for connection in `AuthService.kt`
 
-L'application permet de trouver des films actuellement classés dans le Box Office 200 aléatoirement. Si l'utilisateur possède un compte sur l'application, il peut partager et enregister le film à ses favoris.
+## Data Persistence
 
-## Utilisation
-
-Se connecter avec le service supabase donné par l'école et se laisser guider par l'interface intuitive.
-
-## Persistance des données
-
-L'application conserve un historique des films proposés si ils sont ajoutés dans les favoris. Cet historique est persisté dans la base de données locale (ROOM) de l'application.
-
-Les données relatives aux comptes utilisateurs proviennent du serveur proposé par l'ESI : <https://dnsrivnxleeqdtbyhftv.supabase.co/>
+The application keeps a history of suggested movies if they are added to favorites. This history is persisted in the local database (ROOM) of the application.
 
 ## Backend
 
-L'application mobile appelle via des services web le backend <RapidAPI MoviesDatabase>. Les sources sont disponibles sur le dépôt <https://rapidapi.com/SAdrian/api/moviesdatabase/details>.
+The mobile application makes web service calls to the [RapidAPI MoviesDatabase](https://rapidapi.com/SAdrian/api/moviesdatabase/details). The sources are available in the repository.
 
 ## Code 
-- compile SDK 34
-- Pattern MVVM
-- Customisation du thème (shape, type, color) avec MaterialTheme
-- Utilisation d'une Topbar et BottomBar avec Scaffold
-- Point d'entrée = App.kt
-- Navigation avec NavController et NavHost
-- Aucun string en dur (utilisation de strings.xml et dimens.xml)
-- Aucun magic number
-- Gestion de la rotation d'écran (aucune information ne se perd et tout est gardé en l'état, seulement j'ai choisi de désactiver la BottomBar pour une meilleure expérience utilisateur)
-- Gestion des lifecycles
+- Compile SDK 34
+- MVVM Pattern
+- Customization of the theme (shape, type, color) with MaterialTheme
+- Use of Topbar and BottomBar with Scaffold
+- Entry point = App.kt
+- Navigation with NavController and NavHost
+- No hard-coded strings (use of strings.xml and dimens.xml)
+- No magic numbers
+- Handling screen rotation (no data loss, everything is retained; however, the BottomBar is disabled for a better user experience)
+- Lifecycle management
 
-## Implémentation
-- Les favoris sont stockés en DB locale (user, movie_id)
-- Les favoris sont affichés avec une Lazy Row qui reprend les tuples récupérés en DB
-- Pour charger un favoris, un call API est lancé à partir de l'id stocké en DB pour récupérer les informations sur le film.
-- Pas de bouton navigation Up car tous les écrans sont accessibles depuis la BottomBar (l'écran détail étant simplement une extension du HomeScreen)
-- AppViewModel et MovieViewModel sont des singletons (avec object et companion object) pour être récupérés et utilisés par plusieurs composables et conservant les mêmes données.
+## Implementation
+- Favorites are stored in the local DB (user, movie_id)
+- Favorites are displayed with a Lazy Row that retrieves tuples from the DB
+- To load a favorite, an API call is made using the stored ID in the DB to fetch movie information.
+- AppViewModel and MovieViewModel are singletons (using object and companion object) to be retrieved and used by multiple composables while maintaining the same data.
 
-## Features :
+## Features:
 
-**Roulette de Films :**
-  - L'utilisateur peut appuyer sur un bouton pour lancer la "roulette" et obtenir une recommandation aléatoire de film disponible actuellement dans le BoxOffice 200.
+**Movie Roulette:**
+  - Users can press a button to start the "roulette" and get a random movie recommendation currently available in the Box Office 200.
 
-**Détails du Film :**
-  - Affiche les détails du film recommandé, tels que le titre, la date de sortie, la description, le rating des utilisateurs etc.
+**Movie Details:**
+  - Displays details of the recommended movie, such as title, release date, description, user rating, etc.
 
-**Bouton de Rejouer :**
-  - Permet à l'utilisateur de relancer la roulette pour découvrir un autre film aléatoire.
+**Replay Button:**
+  - Allows users to rerun the roulette to discover another random film.
 
-**Ajouter à ses favoris**
-  - Permet à l'utilisateur d'ajouter le film donné dans ses favoris afin de le retrouver plus facilement.
+**Add to Favorites:**
+  - Allows users to add the given movie to their favorites for easy retrieval.
 
-**Bouton de Partage :**
-  - Donne à l'utilisateur la possibilité de partager le film recommandé avec ses amis via des applications de messagerie ou sur les réseaux. Il s'agit cependant d'une feature rudimentaire qui pourra être améliorée.
+**Share Button:**
+  - Gives users the option to share the recommended movie with friends via messaging apps or on social networks. This feature is rudimentary and can be further improved.
 
-## Auteur
+## Author
 
-**Cameron Noupoue** g58008
+* Cameron Noupoue
+
+## Credits 
+
+Project devised and created during my studies at the École Supérieure d'Informatique (ESI), Brussels.
+
