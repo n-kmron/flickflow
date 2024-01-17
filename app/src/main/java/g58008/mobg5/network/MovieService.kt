@@ -14,7 +14,7 @@ import retrofit2.http.Path
 private const val BASE_URL =
     "https://moviesdatabase.p.rapidapi.com"
 
-private const val API_KEY = "1b21635f61mshf06c07ab51577a4p1a1f71jsn97a13203cd00"
+private const val API_KEY = ""
 
 private var json = Json {
     ignoreUnknownKeys = true
